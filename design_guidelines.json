@@ -1,0 +1,171 @@
+{
+  "identity": {
+    "name": "E1",
+    "persona": "The Anti-AI Designer",
+    "philosophy": "Fusion over Imitation. Emotion First. Content is King.",
+    "anti_patterns": [
+      "No generic 'Inter' everywhere.",
+      "No center-everything layouts.",
+      "No gradient overload.",
+      "No purple/teal CTA buttons."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "headings": {
+        "family": "Outfit, Manrope, sans-serif",
+        "weights": ["400", "500", "600"],
+        "usage": "Use for all headings (H1-H6). Tight tracking (-0.02em) for large text."
+      },
+      "body": {
+        "family": "DM Sans, Satoshi, sans-serif",
+        "weights": ["400", "500"],
+        "usage": "Use for paragraphs, UI labels, and inputs. Readable and neutral."
+      },
+      "mono": {
+        "family": "JetBrains Mono, monospace",
+        "weights": ["400"],
+        "usage": "Use for file specs, prices, and technical details."
+      }
+    },
+    "rules": [
+      "Headings > 32px must have tracking-tight.",
+      "Overlines/Labels must be uppercase + tracking-widest + text-xs.",
+      "Line height: leading-none for headers, leading-relaxed for body."
+    ]
+  },
+  "colors": {
+    "palette_name": "The Swiss Archive",
+    "theme": "light",
+    "base": {
+      "background": "#ffffff",
+      "foreground": "#0a0a0a",
+      "card": "#ffffff",
+      "card_foreground": "#0a0a0a",
+      "border": "#e5e5e5"
+    },
+    "accent": {
+      "primary": "#0055FF",
+      "primary_foreground": "#ffffff",
+      "secondary": "#f4f4f5",
+      "secondary_foreground": "#18181b",
+      "destructive": "#ff3b30"
+    },
+    "neutrals": {
+      "muted": "#f4f4f5",
+      "muted_foreground": "#71717a"
+    },
+    "rules": [
+      "Primary Color (Blue) is ONLY for the main CTA (Buy Now, Checkout).",
+      "No gradients on buttons. Solid, high-contrast colors.",
+      "Admin Dashboard: Use white bg with distinct black borders for separation.",
+      "Text Color: Never pure black (#000) on white. Use #0a0a0a."
+    ]
+  },
+  "visual_enhancers": {
+    "borders": "1px solid #e5e5e5 (Light Gray) for subtle separation. 1px solid #000 (Black) for active/focus states.",
+    "radius": "rounded-md (6px) or rounded-none for a brutalist feel.",
+    "shadows": "No shadows by default. 'shadow-xl' on hover for product cards.",
+    "glassmorphism": "Use sparingly on sticky headers: backdrop-blur-xl + bg-white/80 + border-b border-black/5.",
+    "texture": "Add subtle grain to the background of the Hero section if possible."
+  },
+  "layout_strategies": {
+    "spacing": "Generous. Use p-8 or p-12 where others use p-4.",
+    "grids": {
+      "marketing": "The Tetris Grid (Bento). Mix col-span-1, col-span-2, row-span-2 for variety.",
+      "admin": "Strict 12-column grid. Sidebar fixed width (250px). Content area fluid."
+    },
+    "containers": {
+      "max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "cards": "Aspect ratio 1:1 or 4:3 for product thumbnails. Clean, white bg, no border, just image + text below."
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "h-10 px-8 rounded-md font-medium transition-transform active:scale-95",
+      "variants": {
+        "default": "bg-[#0055FF] text-white hover:bg-[#0044CC]",
+        "outline": "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        "ghost": "hover:bg-accent hover:text-accent-foreground"
+      }
+    },
+    "cards": {
+      "product": "Group relative. Image aspect-square bg-gray-100 rounded-md overflow-hidden. Title and Price below. Hover: Image slight zoom.",
+      "dashboard_stat": "p-6 border rounded-md bg-white. No shadow. Bold metric number."
+    },
+    "inputs": {
+      "style": "h-11 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+    },
+    "navigation": {
+      "header": "Sticky. White/80 blur. Minimal logo. Links: Text only, hover underline.",
+      "sidebar": "Fixed left. 250px wide. Border-r. Links: Ghost button style, full width, justify-start."
+    }
+  },
+  "assets": {
+    "images": [
+      {
+        "category": "hero_background",
+        "url": "https://images.unsplash.com/photo-1732197537587-2973f6801969?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Abstract white minimalist 3D object flying. Use for Homepage Hero background."
+      },
+      {
+        "category": "hero_alternate",
+        "url": "https://images.unsplash.com/photo-1676395564210-c6ce3d4b40f7?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Abstract wavy shapes on black. Use for 'Dark Mode' toggle or specific section backgrounds."
+      },
+      {
+        "category": "admin_login",
+        "url": "https://images.unsplash.com/photo-1696087225391-eb97abf5ba20?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Minimalist desk setup with screens. Use for Admin Login page side image."
+      },
+      {
+        "category": "product_business_card",
+        "url": "https://images.unsplash.com/photo-1612314578108-cdd41a612f2a?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Clean white business card mockup on textile. Use as Product Thumbnail."
+      },
+      {
+        "category": "product_3d_pack",
+        "url": "https://images.pexels.com/photos/28428584/pexels-photo-28428584.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Dynamic 3D geometric shapes blue. Use as Product Thumbnail for '3D Assets'."
+      },
+      {
+        "category": "product_poster",
+        "url": "https://images.unsplash.com/photo-1770581939371-326fc1537f10?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Poster with text. Use as Product Thumbnail for 'Print Templates'."
+      },
+      {
+        "category": "product_typography",
+        "url": "https://images.unsplash.com/photo-1739476477643-cb7700017890?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Paper with words. Use as Product Thumbnail for 'Fonts/Typography'."
+      },
+      {
+        "category": "user_avatar",
+        "url": "https://images.unsplash.com/photo-1647395983866-e91a42e0cbab?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Woman designer at computer. Use for User Profile or Testimonial."
+      }
+    ],
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5px. Crisp and thin."
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. SYSTEM: This is a Digital Product Marketplace. Reliability and Clarity are paramount.",
+    "2. ADMIN: The Admin Dashboard must be high-density but readable. Use Tables with strict alignment.",
+    "3. STORE: The Storefront must feel like an Art Gallery. Large images, minimal text.",
+    "4. IMAGES: Use the provided Asset URLs. DO NOT use placeholders.",
+    "5. MOCKUP: If a specific image is missing, reuse the 'Abstract 3D' image with a different crop/filter.",
+    "6. TESTING: Add data-testid to every interactive element (buttons, inputs, cards).",
+    "7. TECH: Use standard HTML/CSS for marketing layouts to ensure 'Bento' grid flexibility. Use Shadcn for interactive components (modals, forms).",
+    "8. THEME: Default to LIGHT mode. It's a professional tool. Dark mode can be an option but prioritize Light."
+  ],
+  "universal_guidelines": [
+    "Avoid generic 'AI slop' aesthetics.",
+    "No centered layouts everywhere.",
+    "Use glass-morphism with 24px blur for headers.",
+    "Micro-animations on hover are mandatory.",
+    "Use 'Sonner' for toasts.",
+    "Components must use named exports.",
+    "Pages must use default exports."
+  ]
+}
