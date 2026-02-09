@@ -7,10 +7,16 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || ''
-});
+let razorpay;
+try {
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+  }
+} catch (error) {
+  console.warn('Razorpay not configured. Payment routes will not work until keys are added.');\n}
 
 // Create order
 router.post('/create-order', protect, async (req, res) => {
