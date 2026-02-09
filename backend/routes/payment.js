@@ -21,6 +21,10 @@ try {
 // Create order
 router.post('/create-order', protect, async (req, res) => {
   try {
+    if (!razorpay) {
+      return res.status(503).json({ error: 'Payment gateway not configured. Please add Razorpay credentials.' });
+    }
+
     const { productId } = req.body;
 
     const product = await Product.findById(productId);
