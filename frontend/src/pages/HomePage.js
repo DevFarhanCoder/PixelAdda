@@ -97,16 +97,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-8 border-b">
+      <section className="py-12 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-3">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-semibold tracking-tight mb-2">Browse by Category</h2>
+            <p className="text-muted-foreground">Explore our wide range of professional design templates</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             <button
               onClick={() => setSelectedCategory(null)}
               data-testid="category-all"
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`p-4 rounded-md text-sm font-medium transition-all hover-lift ${
                 !selectedCategory
-                  ? 'bg-[#0055FF] text-white'
-                  : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                  ? 'bg-[#0055FF] text-white shadow-lg'
+                  : 'bg-white border hover:border-primary'
               }`}
             >
               All Designs
@@ -116,10 +120,10 @@ export default function HomePage() {
                 key={category._id}
                 onClick={() => setSelectedCategory(category._id)}
                 data-testid={`category-${category.slug}`}
-                className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`p-4 rounded-md text-sm font-medium transition-all hover-lift text-left ${
                   selectedCategory === category._id
-                    ? 'bg-[#0055FF] text-white'
-                    : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                    ? 'bg-[#0055FF] text-white shadow-lg'
+                    : 'bg-white border hover:border-primary'
                 }`}
               >
                 {category.name}
