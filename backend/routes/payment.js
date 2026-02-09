@@ -16,7 +16,8 @@ try {
     });
   }
 } catch (error) {
-  console.warn('Razorpay not configured. Payment routes will not work until keys are added.');\n}
+  console.warn('Razorpay not configured. Payment routes will not work until keys are added.');
+}
 
 // Create order
 router.post('/create-order', protect, async (req, res) => {
