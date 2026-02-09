@@ -133,14 +133,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-12">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight">
+                {selectedCategory 
+                  ? categories.find(c => c._id === selectedCategory)?.name 
+                  : 'All Designs'}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {products.length} {products.length === 1 ? 'product' : 'products'} available
+              </p>
+            </div>
+          </div>
+
           {products.length === 0 ? (
-            <div className="text-center py-16" data-testid="no-products">
-              <p className="text-muted-foreground">No products available yet.</p>
+            <div className="text-center py-20 bg-muted/20 rounded-lg" data-testid="no-products">
+              <div className="max-w-md mx-auto">
+                <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-4" strokeWidth={1.5} />
+                <h3 className="text-xl font-semibold mb-2">No Products Available</h3>
+                <p className="text-muted-foreground mb-6">
+                  Products will appear here once the admin uploads design files.
+                  {user?.role === 'admin' && (
+                    <span className="block mt-2 text-primary">
+                      <Link to="/admin/products" className="underline">Go to Admin Panel to add products →</Link>
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {products.map(product => (
                 <Link
                   key={product._id}
@@ -148,8 +172,8 @@ export default function HomePage() {
                   className="group"
                   data-testid={`product-card-${product._id}`}
                 >
-                  <div className="hover-lift">
-                    <div className="aspect-square bg-gray-100 rounded-md overflow-hidden mb-4">
+                  <div className="hover-lift bg-white border rounded-md overflow-hidden">
+                    <div className="aspect-square bg-gray-100 overflow-hidden">
                       {product.previewImages && product.previewImages[0] ? (
                         <img
                           src={product.previewImages[0]}
@@ -162,11 +186,16 @@ export default function HomePage() {
                         </div>
                       )}
                     </div>
-                    <h3 className="font-medium mb-1 tracking-tight">{product.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
-                      {product.description}
-                    </p>
-                    <p className="font-mono text-sm font-medium">₹{product.price}</p>
+                    <div className="p-4">
+                      <h3 className="font-medium mb-1 tracking-tight line-clamp-2">{product.title}</h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {product.category?.name || 'Uncategorized'}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-mono text-lg font-semibold text-primary">₹{product.price}</p>
+                        <span className="text-xs text-muted-foreground">{product.downloads} downloads</span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               ))}
