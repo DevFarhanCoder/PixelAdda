@@ -101,10 +101,10 @@ export default function UserDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {orders.map(order => (
                 <div key={order._id} className="border rounded-md p-6" data-testid={`order-card-${order._id}`}>
-                  {order.product.previewImages && order.product.previewImages[0] && (
+                  {order.product.previewImagesUrls && order.product.previewImagesUrls[0] && (
                     <div className="aspect-square bg-gray-100 rounded-md overflow-hidden mb-4">
                       <img
-                        src={order.product.previewImages[0]}
+                        src={order.product.previewImagesUrls[0]}
                         alt={order.product.title}
                         className="w-full h-full object-cover"
                       />
