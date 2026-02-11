@@ -3,8 +3,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const { initializeR2 } = require('./utils/r2Storage');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
+
+// Initialize R2 after environment variables are loaded
+initializeR2();
 
 const app = express();
 
