@@ -4,9 +4,22 @@ const multer = require('multer');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { protect, adminOnly } = require('../middleware/auth');
-const { uploadToR2, getSignedDownloadUrl } = require('../utils/r2Storage');
+const { uploadToR2, getSignedDownloadUrl, getSignedViewUrl } = require('../utils/r2Storage');
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+// Helper function to add signed URLs to product
+const addSignedUrlsToProduct = async (product) => {
+  const productObj = product.toObject ? product.toObject() : product;
+  
+  if (productObj.previewImages && productObj.previewImages.length > 0) {
+    productObj.previewImagesUrls = await Promise.all(
+      productObj.previewImages.map(key => getSignedViewUrl(key))
+    );
+  }
+  
+  return productObj;
+};
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -22,7 +35,12 @@ router.get('/', async (req, res) => {
       .populate('category', 'name slug')
       .sort({ createdAt: -1 });
     
-    res.json(products);
+    // Add signed URLs to all products
+    const productsWithUrls = await Promise.all(
+      products.map(product => addSignedUrlsToProduct(product))
+    );
+    
+    res.json(productsWithUrls);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -38,7 +56,8 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    res.json(product);
+    const productWithUrls = await addSignedUrlsToProduct(product);
+    res.json(productWithUrls);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
