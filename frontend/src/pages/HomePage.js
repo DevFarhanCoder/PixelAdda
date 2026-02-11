@@ -174,9 +174,9 @@ export default function HomePage() {
                 >
                   <div className="hover-lift bg-white border rounded-md overflow-hidden">
                     <div className="aspect-square bg-gray-100 overflow-hidden">
-                      {product.previewImages && product.previewImages[0] ? (
+                      {product.previewImagesUrls && product.previewImagesUrls[0] ? (
                         <img
-                          src={product.previewImages[0]}
+                          src={product.previewImagesUrls[0]}
                           alt={product.title}
                           className="w-full h-full object-cover product-card-image"
                         />
