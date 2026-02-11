@@ -59,8 +59,23 @@ const getSignedDownloadUrl = async (fileKey, fileName) => {
   return url;
 };
 
+const getSignedViewUrl = async (fileKey) => {
+  if (!R2_CONFIGURED || !s3Client) {
+    throw new Error('R2 storage not configured. Please add Cloudflare R2 credentials.');
+  }
+
+  const command = new GetObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: fileKey
+  });
+
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 86400 }); // 24 hours for preview images
+  return url;
+};
+
 module.exports = {
   initializeR2,
   uploadToR2,
-  getSignedDownloadUrl
+  getSignedDownloadUrl,
+  getSignedViewUrl
 };
