@@ -2,22 +2,28 @@ const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/clien
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'placeholder';
-const R2_CONFIGURED = process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY;
+let s3Client = null;
+let R2_CONFIGURED = false;
+let BUCKET_NAME = 'placeholder';
 
-let s3Client;
-if (R2_CONFIGURED) {
-  s3Client = new S3Client({
-    region: 'auto',
-    endpoint: process.env.R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY
-    }
-  });
-} else {
-  console.warn('Cloudflare R2 not configured. File uploads will not work until credentials are added.');
-}
+const initializeR2 = () => {
+  BUCKET_NAME = process.env.R2_BUCKET_NAME || 'placeholder';
+  R2_CONFIGURED = !!(process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY);
+  
+  if (R2_CONFIGURED) {
+    s3Client = new S3Client({
+      region: 'auto',
+      endpoint: process.env.R2_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY
+      }
+    });
+    console.log('✓ Cloudflare R2 configured successfully');
+  } else {
+    console.warn('⚠ Cloudflare R2 not configured. File uploads will not work until credentials are added.');
+  }
+};
 
 const uploadToR2 = async (file, folder = '') => {
   if (!R2_CONFIGURED || !s3Client) {
@@ -49,11 +55,12 @@ const getSignedDownloadUrl = async (fileKey, fileName) => {
     ResponseContentDisposition: `attachment; filename="${fileName}"`
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
   return url;
 };
 
 module.exports = {
+  initializeR2,
   uploadToR2,
   getSignedDownloadUrl
 };
