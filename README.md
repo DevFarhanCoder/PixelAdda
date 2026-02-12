@@ -1,4 +1,4 @@
-# Digital Design Marketplace
+# Pixeladda - Digital Design Marketplace
 
 A full-stack e-commerce platform for selling digital design files (PSD, AI, CDR, ZIP) built with Node.js, Express, React, and MongoDB.
 
