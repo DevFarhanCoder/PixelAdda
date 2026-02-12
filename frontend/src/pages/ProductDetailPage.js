@@ -188,16 +188,28 @@ export default function ProductDetailPage() {
                 </Button>
               </Link>
             ) : (
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={handlePurchase}
-                disabled={purchasing}
-                data-testid="buy-now-button"
-              >
-                <ShoppingCart className="h-5 w-5 mr-2" strokeWidth={1.5} />
-                {purchasing ? 'Processing...' : 'Buy Now'}
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={handlePurchase}
+                  disabled={purchasing}
+                  data-testid="buy-now-button"
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" strokeWidth={1.5} />
+                  {purchasing ? 'Processing...' : 'Buy Now'}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                  onClick={handleAddToCart}
+                  data-testid="add-to-cart-detail-button"
+                >
+                  <Plus className="h-5 w-5 mr-2" strokeWidth={1.5} />
+                  Add to Cart
+                </Button>
+              </div>
             )}
           </div>
         </div>
