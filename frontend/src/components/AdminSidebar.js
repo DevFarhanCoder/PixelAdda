@@ -13,7 +13,7 @@ export const AdminSidebar = ({ active }) => {
   return (
     <aside className="w-64 border-r bg-white h-screen fixed left-0 top-0">
       <div className="p-6 border-b">
-        <h2 className="text-xl font-semibold tracking-tight">Admin Panel</h2>
+        <h2 className="text-xl font-semibold tracking-tight">Pixeladda Admin</h2>
       </div>
       <nav className="p-4">
         <ul className="space-y-2">
