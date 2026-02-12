@@ -5,6 +5,7 @@ import { Download, LogOut, ShoppingBag } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import Navbar from '../components/Navbar';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
