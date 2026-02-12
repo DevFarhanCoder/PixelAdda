@@ -40,9 +40,9 @@ export default function RegisterPage() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <h1 className="text-4xl font-semibold tracking-tight mb-2" data-testid="register-heading">
-            Create Account
+            Join Pixeladda
           </h1>
-          <p className="text-muted-foreground mb-8">Join to access premium design files</p>
+          <p className="text-muted-foreground mb-8">Create account to access premium design files</p>
 
           <form onSubmit={handleSubmit} className="space-y-6" data-testid="register-form">
             <div>
