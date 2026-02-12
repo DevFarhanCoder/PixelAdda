@@ -35,6 +35,14 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handleAddToCart = () => {
+    if (addToCart(product)) {
+      toast.success('Added to cart!');
+    } else {
+      toast.info('Already in cart');
+    }
+  };
+
   const handlePurchase = async () => {
     if (!isAuthenticated) {
       toast.error('Please login to purchase');
