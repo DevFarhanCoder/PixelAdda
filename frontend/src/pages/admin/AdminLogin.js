@@ -49,7 +49,7 @@ export default function AdminLogin() {
             <Shield className="h-12 w-12 text-primary" strokeWidth={1.5} />
           </div>
           <h1 className="text-4xl font-semibold tracking-tight mb-2 text-center" data-testid="admin-login-heading">
-            Admin Portal
+            Pixeladda Admin Portal
           </h1>
           <p className="text-muted-foreground mb-8 text-center">Login to manage your marketplace</p>
 
