@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <h1 className="text-4xl font-semibold tracking-tight mb-2" data-testid="login-heading">
-            Welcome Back
+            Welcome Back to Pixeladda
           </h1>
           <p className="text-muted-foreground mb-8">Login to access your purchases</p>
 
