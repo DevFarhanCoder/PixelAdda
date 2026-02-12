@@ -62,21 +62,16 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center space-x-2">
-              <ShoppingBag className="h-6 w-6" strokeWidth={1.5} />
-              <span className="text-xl font-semibold tracking-tight">DesignMarket</span>
-            </Link>
-            
-            <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="logout-button">
-              <LogOut className="h-4 w-4 mr-2" strokeWidth={1.5} />
-              Logout
-            </Button>
-          </div>
+      <Navbar />
+      
+      <div className="border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end">
+          <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="logout-button">
+            <LogOut className="h-4 w-4 mr-2" strokeWidth={1.5} />
+            Logout
+          </Button>
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
