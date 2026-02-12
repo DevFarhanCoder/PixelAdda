@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, LogIn, Phone } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, LogIn, Phone } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
   const { cartCount } = useCart();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
+      setSearchQuery("");
     }
   };
 
@@ -27,16 +27,25 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-10 text-sm">
             <div className="flex items-center space-x-4">
-              <a href="tel:+919820329571" className="flex items-center text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="tel:+919820329571"
+                className="flex items-center text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Phone className="h-3.5 w-3.5 mr-1.5" />
                 +91 98203 29571
               </a>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/contact"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 Contact
               </Link>
-              <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/faq"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 FAQ
               </Link>
             </div>
@@ -50,15 +59,18 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_digital-designs-3/artifacts/w4v0buzu_image.png"
+              <img
+                src="/Logo.jpg.jpeg"
                 alt="Pixeladda"
                 className="h-8 sm:h-10 w-auto object-contain"
               />
             </Link>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-8">
+            <form
+              onSubmit={handleSearch}
+              className="hidden md:flex flex-1 max-w-xl mx-8"
+            >
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -89,7 +101,7 @@ export default function Navbar() {
                 <Link to="/dashboard" data-testid="dashboard-link">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" strokeWidth={1.5} />
-                    {user?.name || 'Dashboard'}
+                    {user?.name || "Dashboard"}
                   </Button>
                 </Link>
               ) : (

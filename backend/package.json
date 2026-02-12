@@ -14,17 +14,17 @@
     "seed:categories": "node scripts/seedCategories.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^8.0.0",
-    "dotenv": "^16.3.1",
-    "cors": "^2.8.5",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "razorpay": "^2.9.2",
     "@aws-sdk/client-s3": "^3.470.0",
     "@aws-sdk/s3-request-presigner": "^3.470.0",
-    "crypto": "^1.0.1"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0",
+    "multer": "^1.4.5-lts.1",
+    "razorpay": "^2.9.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
