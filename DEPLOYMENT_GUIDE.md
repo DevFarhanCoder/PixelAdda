@@ -16,6 +16,7 @@
    - **Instance Type**: Free (or select paid for better performance)
 
 5. **Add Environment Variables** (in Render dashboard):
+
    ```
    NODE_ENV=production
    MONGO_URL=your_mongodb_atlas_connection_string
@@ -46,9 +47,11 @@
    - **Install Command**: `npm install` (leave default)
 
 5. **Add Environment Variable**:
+
    ```
    REACT_APP_BACKEND_URL=https://your-backend-url.onrender.com
    ```
+
    ⚠️ **Important**: Replace with your actual Render backend URL from Step 1
 
 6. **Deploy**
@@ -70,6 +73,7 @@ Then **trigger a redeployment** in Render.
 ## 📋 Environment Variables Checklist
 
 ### **Backend (Render)**
+
 - ✅ `NODE_ENV` → `production`
 - ✅ `MONGO_URL` → MongoDB Atlas connection string
 - ✅ `JWT_SECRET` → Random secure string
@@ -82,6 +86,7 @@ Then **trigger a redeployment** in Render.
 - ✅ `R2_BUCKET_NAME` → R2 bucket name
 
 ### **Frontend (Vercel)**
+
 - ✅ `REACT_APP_BACKEND_URL` → Your Render backend URL
 
 ---
@@ -89,21 +94,25 @@ Then **trigger a redeployment** in Render.
 ## 🔧 Troubleshooting
 
 ### **CORS Errors**
+
 - Make sure `CORS_ORIGINS` in backend matches your exact Vercel URL
 - No trailing slash in the URL
 - Redeploy backend after changing CORS settings
 
 ### **Backend Not Responding**
+
 - Check Render logs for errors
 - Verify MongoDB Atlas connection string
 - Ensure MongoDB Atlas allows connections from anywhere (0.0.0.0/0) for Render
 
 ### **Frontend Can't Connect to Backend**
+
 - Double-check `REACT_APP_BACKEND_URL` in Vercel
 - Must start with `https://` (not `http://`)
 - Redeploy frontend after changing environment variables
 
 ### **Images Not Loading**
+
 - Verify Cloudflare R2 credentials in backend
 - Check R2 bucket permissions (public access enabled)
 - Review backend logs for R2 connection errors
@@ -150,16 +159,16 @@ Then **trigger a redeployment** in Render.
 
 ## 💡 Tips
 
-- **Free Tier Limitations**: 
+- **Free Tier Limitations**:
   - Render free tier spins down after 15 mins of inactivity
   - First request after spin-down takes ~30 seconds
   - Consider upgrading for production use
 
-- **Auto-Deploy**: 
+- **Auto-Deploy**:
   - Both Vercel and Render support auto-deploy from GitHub
   - Push to main branch → automatic deployment
 
-- **Environment Variables**: 
+- **Environment Variables**:
   - Never commit `.env` files
   - Always use the platform's environment variable settings
 
@@ -176,5 +185,6 @@ Then **trigger a redeployment** in Render.
 ---
 
 **Need Help?** Check the platform-specific documentation:
+
 - [Vercel Docs](https://vercel.com/docs)
 - [Render Docs](https://render.com/docs)
