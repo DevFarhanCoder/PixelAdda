@@ -4,6 +4,9 @@
   "devCommand": "npm start",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "create-react-app",
+  "env": {
+    "CI": "false"
+  },
   "rewrites": [
     {
       "source": "/(.*)",
