@@ -125,7 +125,9 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b">
+      <Navbar />
+      
+      <div className="border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/" data-testid="back-button">
             <Button variant="ghost" size="sm">
@@ -134,7 +136,7 @@ export default function ProductDetailPage() {
             </Button>
           </Link>
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
