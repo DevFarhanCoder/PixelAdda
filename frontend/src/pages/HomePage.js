@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { ShoppingBag, ArrowRight } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { useCart } from '../context/CartContext';
-import { toast } from 'sonner';
-import Navbar from '../components/Navbar';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { ShoppingBag, ArrowRight } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { useCart } from "../context/CartContext";
+import { toast } from "sonner";
+import Navbar from "../components/Navbar";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -25,28 +25,28 @@ export default function HomePage() {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   const fetchProducts = async () => {
     try {
-      const url = selectedCategory 
+      const url = selectedCategory
         ? `${API_URL}/api/products?category=${selectedCategory}`
         : `${API_URL}/api/products`;
       const response = await axios.get(url);
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
     if (addToCart(product)) {
-      toast.success('Added to cart!');
+      toast.success("Added to cart!");
     } else {
-      toast.info('Already in cart');
+      toast.info("Already in cart");
     }
   };
 
@@ -55,11 +55,14 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden" style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1732197537587-2973f6801969?crop=entropy&cs=srgb&fm=jpg&q=85')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
+      <section
+        className="relative h-[50vh] flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1732197537587-2973f6801969?crop=entropy&cs=srgb&fm=jpg&q=85')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="absolute inset-0 bg-white/70"></div>
         <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-none mb-6">
@@ -79,33 +82,37 @@ export default function HomePage() {
           {/* Left Sidebar - Categories */}
           <aside className="lg:w-64 flex-shrink-0">
             <div className="lg:sticky lg:top-24">
-              <h2 className="text-lg font-semibold mb-4 px-4 lg:px-0">Categories</h2>
-              <nav className="space-y-1 max-h-[70vh] overflow-y-auto">
+              <h2 className="text-lg font-semibold mb-4 px-4 lg:px-0">
+                Categories
+              </h2>
+              <nav className="space-y-1">
                 <button
                   onClick={() => setSelectedCategory(null)}
                   data-testid="category-all"
                   className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
                     !selectedCategory
-                      ? 'bg-primary text-white'
-                      : 'hover:bg-muted'
+                      ? "bg-primary text-white"
+                      : "hover:bg-muted"
                   }`}
                 >
                   <span className="font-medium">All Designs</span>
                   {!selectedCategory && <ArrowRight className="h-4 w-4" />}
                 </button>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <button
                     key={category._id}
                     onClick={() => setSelectedCategory(category._id)}
                     data-testid={`category-${category.slug}`}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
                       selectedCategory === category._id
-                        ? 'bg-primary text-white'
-                        : 'hover:bg-muted'
+                        ? "bg-primary text-white"
+                        : "hover:bg-muted"
                     }`}
                   >
                     <span className="font-medium">{category.name}</span>
-                    {selectedCategory === category._id && <ArrowRight className="h-4 w-4" />}
+                    {selectedCategory === category._id && (
+                      <ArrowRight className="h-4 w-4" />
+                    )}
                   </button>
                 ))}
               </nav>
@@ -117,38 +124,53 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  {selectedCategory 
-                    ? categories.find(c => c._id === selectedCategory)?.name 
-                    : 'All Designs'}
+                  {selectedCategory
+                    ? categories.find((c) => c._id === selectedCategory)?.name
+                    : "All Designs"}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {products.length} {products.length === 1 ? 'product' : 'products'} available
+                  {products.length}{" "}
+                  {products.length === 1 ? "product" : "products"} available
                 </p>
               </div>
             </div>
 
             {products.length === 0 ? (
-              <div className="text-center py-20 bg-muted/10 rounded-lg" data-testid="no-products">
+              <div
+                className="text-center py-20 bg-muted/10 rounded-lg"
+                data-testid="no-products"
+              >
                 <div className="max-w-md mx-auto">
-                  <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-4" strokeWidth={1.5} />
-                  <h3 className="text-xl font-semibold mb-2">No Products Available</h3>
+                  <ShoppingBag
+                    className="h-16 w-16 mx-auto text-muted-foreground mb-4"
+                    strokeWidth={1.5}
+                  />
+                  <h3 className="text-xl font-semibold mb-2">
+                    No Products Available
+                  </h3>
                   <p className="text-muted-foreground mb-6">
-                    Products will appear here once the admin uploads design files.
+                    Products will appear here once the admin uploads design
+                    files.
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map(product => (
-                  <div key={product._id} className="group" data-testid={`product-card-${product._id}`}>
+              <div className="columns-1 sm:columns-2 lg:columns-2 xl:columns-3 gap-6 space-y-6">
+                {products.map((product) => (
+                  <div
+                    key={product._id}
+                    className="break-inside-avoid mb-6 group"
+                    data-testid={`product-card-${product._id}`}
+                  >
                     <Link to={`/product/${product._id}`}>
                       <div className="hover-lift bg-white border rounded-lg overflow-hidden">
-                        <div className="aspect-square bg-gray-100 overflow-hidden">
-                          {product.previewImagesUrls && product.previewImagesUrls[0] ? (
+                        <div className="bg-gray-100 overflow-hidden">
+                          {product.previewImagesUrls &&
+                          product.previewImagesUrls[0] ? (
                             <img
                               src={product.previewImagesUrls[0]}
                               alt={product.title}
-                              className="w-full h-full object-cover product-card-image"
+                              className="w-full h-auto object-contain product-card-image"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -157,12 +179,16 @@ export default function HomePage() {
                           )}
                         </div>
                         <div className="p-4">
-                          <h3 className="font-medium mb-1 tracking-tight line-clamp-2">{product.title}</h3>
+                          <h3 className="font-medium mb-1 tracking-tight line-clamp-2">
+                            {product.title}
+                          </h3>
                           <p className="text-xs text-muted-foreground mb-3">
-                            {product.category?.name || 'Uncategorized'}
+                            {product.category?.name || "Uncategorized"}
                           </p>
                           <div className="flex items-center justify-between">
-                            <p className="font-mono text-lg font-semibold text-primary">₹{product.price}</p>
+                            <p className="font-mono text-lg font-semibold text-primary">
+                              ₹{product.price}
+                            </p>
                             <Button
                               size="sm"
                               variant="outline"
@@ -196,8 +222,22 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/contact" className="text-muted-foreground hover:text-primary">Contact Us</Link></li>
-                <li><Link to="/faq" className="text-muted-foreground hover:text-primary">FAQ</Link></li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/faq"
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    FAQ
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
