@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import { ShoppingBag, SlidersHorizontal } from "lucide-react";
@@ -17,21 +17,16 @@ export default function SearchResultsPage() {
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    fetchCategories();
-    searchProducts();
-  }, [query, selectedCategory]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
+  }, []);
 
-  const searchProducts = async () => {
+  const searchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const params = {};
@@ -52,7 +47,12 @@ export default function SearchResultsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, selectedCategory]);
+
+  useEffect(() => {
+    fetchCategories();
+    searchProducts();
+  }, [fetchCategories, searchProducts]);
 
   const handleAddToCart = (product) => {
     if (addToCart(product)) {
@@ -131,8 +131,18 @@ export default function SearchResultsPage() {
               <div key={product._id} className="break-inside-avoid mb-6 group">
                 <Link to={`/product/${product._id}`}>
                   <div className="bg-gray-100 rounded-lg overflow-hidden mb-3">
-                    {product.previewImagesUrls &&
-                    product.previewImagesUrls[0] ? (
+                    {product.previewVideoUrl ? (
+                      <video
+                        src={product.previewVideoUrl}
+                        alt={product.title}
+                        className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : product.previewImagesUrls &&
+                      product.previewImagesUrls[0] ? (
                       <img
                         src={product.previewImagesUrls[0]}
                         alt={product.title}

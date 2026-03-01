@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ShoppingBag, ArrowRight } from "lucide-react";
@@ -15,21 +15,16 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-  }, [selectedCategory]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
+  }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const url = selectedCategory
         ? `${API_URL}/api/products?category=${selectedCategory}`
@@ -39,7 +34,12 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  };
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+  }, [fetchCategories, fetchProducts]);
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -71,7 +71,7 @@ export default function HomePage() {
             for Creative Professionals
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8">
-            High-quality PSD, AI, and CDR templates for all your design needs.
+            High-Quality PSD, AI & CDR Templates for all your design needs.
           </p>
         </div>
       </section>
@@ -165,8 +165,18 @@ export default function HomePage() {
                     <Link to={`/product/${product._id}`}>
                       <div className="hover-lift bg-white border rounded-lg overflow-hidden">
                         <div className="bg-gray-100 overflow-hidden">
-                          {product.previewImagesUrls &&
-                          product.previewImagesUrls[0] ? (
+                          {product.previewVideoUrl ? (
+                            <video
+                              src={product.previewVideoUrl}
+                              alt={product.title}
+                              className="w-full h-auto object-contain product-card-image"
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                            />
+                          ) : product.previewImagesUrls &&
+                            product.previewImagesUrls[0] ? (
                             <img
                               src={product.previewImagesUrls[0]}
                               alt={product.title}

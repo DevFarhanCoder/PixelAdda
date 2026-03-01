@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-import { ArrowLeft, Download, ShoppingCart, Plus } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
-import { toast } from 'sonner';
-import Navbar from '../components/Navbar';
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import { ArrowLeft, Download, ShoppingCart, Plus } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { toast } from "sonner";
+import Navbar from "../components/Navbar";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -19,34 +19,34 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/products/${id}`);
       setProduct(response.data);
     } catch (error) {
-      console.error('Error fetching product:', error);
-      toast.error('Failed to load product');
+      console.error("Error fetching product:", error);
+      toast.error("Failed to load product");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const handleAddToCart = () => {
     if (addToCart(product)) {
-      toast.success('Added to cart!');
+      toast.success("Added to cart!");
     } else {
-      toast.info('Already in cart');
+      toast.info("Already in cart");
     }
   };
 
   const handlePurchase = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to purchase');
-      navigate('/login');
+      toast.error("Please login to purchase");
+      navigate("/login");
       return;
     }
 
@@ -56,7 +56,7 @@ export default function ProductDetailPage() {
       const orderResponse = await axios.post(
         `${API_URL}/api/payment/create-order`,
         { productId: id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       const options = {
@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
         amount: orderResponse.data.amount,
         currency: orderResponse.data.currency,
         order_id: orderResponse.data.orderId,
-        name: 'DesignMarket',
+        name: "DesignMarket",
         description: product.title,
         handler: async (response) => {
           try {
@@ -73,23 +73,23 @@ export default function ProductDetailPage() {
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
+                razorpay_signature: response.razorpay_signature,
               },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${token}` } },
             );
-            toast.success('Purchase successful!');
-            navigate('/dashboard');
+            toast.success("Purchase successful!");
+            navigate("/dashboard");
           } catch (error) {
-            toast.error('Payment verification failed');
+            toast.error("Payment verification failed");
           }
         },
         prefill: {
           name: user.name,
-          email: user.email
+          email: user.email,
         },
         theme: {
-          color: '#0055FF'
-        }
+          color: "#0055FF",
+        },
       };
 
       const razorpay = new window.Razorpay(options);
@@ -98,7 +98,7 @@ export default function ProductDetailPage() {
       if (error.response?.data?.error) {
         toast.error(error.response.data.error);
       } else {
-        toast.error('Failed to initiate payment');
+        toast.error("Failed to initiate payment");
       }
     } finally {
       setPurchasing(false);
@@ -126,7 +126,7 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
+
       <div className="border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link to="/" data-testid="back-button">
@@ -141,7 +141,18 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            {product.previewImagesUrls && product.previewImagesUrls[0] ? (
+            {product.previewVideoUrl ? (
+              <video
+                src={product.previewVideoUrl}
+                alt={product.title}
+                className="w-full rounded-md"
+                controls
+                autoPlay
+                loop
+                muted
+                data-testid="product-video"
+              />
+            ) : product.previewImagesUrls && product.previewImagesUrls[0] ? (
               <img
                 src={product.previewImagesUrls[0]}
                 alt={product.title}
@@ -157,24 +168,37 @@ export default function ProductDetailPage() {
 
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
-              {product.category?.name || 'Uncategorized'}
+              {product.category?.name || "Uncategorized"}
             </p>
-            <h1 className="text-4xl font-semibold tracking-tight mb-4" data-testid="product-title">
+            <h1
+              className="text-4xl font-semibold tracking-tight mb-4"
+              data-testid="product-title"
+            >
               {product.title}
             </h1>
-            <p className="text-3xl font-mono font-medium mb-8" data-testid="product-price">
+            <p
+              className="text-3xl font-mono font-medium mb-8"
+              data-testid="product-price"
+            >
               ₹{product.price}
             </p>
-            <p className="text-base leading-relaxed mb-8" data-testid="product-description">
+            <p
+              className="text-base leading-relaxed mb-8"
+              data-testid="product-description"
+            >
               {product.description}
             </p>
 
             <div className="border-t pt-8 mb-8">
-              <h3 className="text-sm uppercase tracking-widest mb-4">File Details</h3>
+              <h3 className="text-sm uppercase tracking-widest mb-4">
+                File Details
+              </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>File: {product.fileName}</li>
                 {product.fileSize && (
-                  <li>Size: {(product.fileSize / (1024 * 1024)).toFixed(2)} MB</li>
+                  <li>
+                    Size: {(product.fileSize / (1024 * 1024)).toFixed(2)} MB
+                  </li>
                 )}
                 <li>Downloads: {product.downloads}</li>
               </ul>
@@ -182,7 +206,11 @@ export default function ProductDetailPage() {
 
             {hasPurchased ? (
               <Link to="/dashboard">
-                <Button className="w-full" size="lg" data-testid="goto-dashboard-button">
+                <Button
+                  className="w-full"
+                  size="lg"
+                  data-testid="goto-dashboard-button"
+                >
                   <Download className="h-5 w-5 mr-2" strokeWidth={1.5} />
                   Download from Dashboard
                 </Button>
@@ -197,7 +225,7 @@ export default function ProductDetailPage() {
                   data-testid="buy-now-button"
                 >
                   <ShoppingCart className="h-5 w-5 mr-2" strokeWidth={1.5} />
-                  {purchasing ? 'Processing...' : 'Buy Now'}
+                  {purchasing ? "Processing..." : "Buy Now"}
                 </Button>
                 <Button
                   variant="outline"
