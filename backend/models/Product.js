@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  isFree: {
+    type: Boolean,
+    default: false,
+  },
   previewImages: [
     {
       type: String,

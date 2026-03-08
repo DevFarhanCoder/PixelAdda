@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { ShoppingBag, ArrowRight } from "lucide-react";
+import { ShoppingBag, ArrowRight, Search, ArrowUp } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import Navbar from "../components/Navbar";
 
@@ -11,9 +13,17 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const { addToCart } = useCart();
+  const { user } = useAuth();
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -30,7 +40,9 @@ export default function HomePage() {
         ? `${API_URL}/api/products?category=${selectedCategory}`
         : `${API_URL}/api/products`;
       const response = await axios.get(url);
+      setAllProducts(response.data);
       setProducts(response.data);
+      setCurrentPage(1);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -40,6 +52,55 @@ export default function HomePage() {
     fetchCategories();
     fetchProducts();
   }, [fetchCategories, fetchProducts]);
+
+  // Filter products based on search query and generate suggestions
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setProducts(allProducts);
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    } else {
+      const filtered = allProducts.filter(
+        (product) =>
+          product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setProducts(filtered);
+
+      // Generate suggestions from matching products
+      const suggestions = filtered
+        .map((p) => p.title)
+        .filter((title, index, self) => self.indexOf(title) === index)
+        .slice(0, 5);
+      setSearchSuggestions(suggestions);
+      setShowSuggestions(true);
+    }
+    setCurrentPage(1);
+  }, [searchQuery, allProducts]);
+
+  // Handle scroll for back-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -56,7 +117,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section
-        className="relative h-[50vh] flex items-center justify-center overflow-hidden"
+        className="relative h-[25vh] flex items-center justify-center overflow-hidden"
         style={{
           backgroundImage: `url('https://images.unsplash.com/photo-1732197537587-2973f6801969?crop=entropy&cs=srgb&fm=jpg&q=85')`,
           backgroundSize: "cover",
@@ -65,13 +126,11 @@ export default function HomePage() {
       >
         <div className="absolute inset-0 bg-white/70"></div>
         <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-none mb-6">
-            Premium Design Files
-            <br />
-            for Creative Professionals
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight leading-none mb-3">
+            Design Templates
           </h1>
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-8">
-            High-Quality PSD, AI & CDR Templates for all your design needs.
+          <p className="text-sm sm:text-base text-muted-foreground">
+            High-Quality PSD, AI & CDR Templates for all your design needs
           </p>
         </div>
       </section>
@@ -85,25 +144,26 @@ export default function HomePage() {
               <h2 className="text-lg font-semibold mb-4 px-4 lg:px-0">
                 Categories
               </h2>
-              <nav className="space-y-1">
+              {/* Desktop: Vertical scroll, Mobile: Horizontal scroll */}
+              <nav className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto space-x-2 lg:space-x-0 lg:space-y-1 max-h-none lg:max-h-[calc(100vh-200px)] pr-2 pb-2 lg:pb-0 scrollbar-thin">
                 <button
                   onClick={() => setSelectedCategory(null)}
                   data-testid="category-all"
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
+                  className={`flex-shrink-0 lg:w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between whitespace-nowrap ${
                     !selectedCategory
                       ? "bg-primary text-white"
                       : "hover:bg-muted"
                   }`}
                 >
                   <span className="font-medium">All Designs</span>
-                  {!selectedCategory && <ArrowRight className="h-4 w-4" />}
+                  {!selectedCategory && <ArrowRight className="h-4 w-4 ml-2" />}
                 </button>
                 {categories.map((category) => (
                   <button
                     key={category._id}
                     onClick={() => setSelectedCategory(category._id)}
                     data-testid={`category-${category.slug}`}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between ${
+                    className={`flex-shrink-0 lg:w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center justify-between whitespace-nowrap ${
                       selectedCategory === category._id
                         ? "bg-primary text-white"
                         : "hover:bg-muted"
@@ -111,7 +171,7 @@ export default function HomePage() {
                   >
                     <span className="font-medium">{category.name}</span>
                     {selectedCategory === category._id && (
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     )}
                   </button>
                 ))}
@@ -121,6 +181,41 @@ export default function HomePage() {
 
           {/* Right Side - Products */}
           <main className="flex-1">
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search designs... (e.g., 'Wedding', 'Banner')"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery && setShowSuggestions(true)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions(false), 200)
+                  }
+                  className="pl-10"
+                />
+                {/* Search Suggestions */}
+                {showSuggestions && searchSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {searchSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setSearchQuery(suggestion);
+                          setShowSuggestions(false);
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-semibold tracking-tight">
@@ -128,10 +223,12 @@ export default function HomePage() {
                     ? categories.find((c) => c._id === selectedCategory)?.name
                     : "All Designs"}
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {products.length}{" "}
-                  {products.length === 1 ? "product" : "products"} available
-                </p>
+                {user?.role === "admin" && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {products.length}{" "}
+                    {products.length === 1 ? "product" : "products"} available
+                  </p>
+                )}
               </div>
             </div>
 
@@ -155,65 +252,93 @@ export default function HomePage() {
                 </div>
               </div>
             ) : (
-              <div className="columns-1 sm:columns-2 lg:columns-2 xl:columns-3 gap-6 space-y-6">
-                {products.map((product) => (
-                  <div
-                    key={product._id}
-                    className="break-inside-avoid mb-6 group"
-                    data-testid={`product-card-${product._id}`}
-                  >
-                    <Link to={`/product/${product._id}`}>
-                      <div className="hover-lift bg-white border rounded-lg overflow-hidden">
-                        <div className="bg-gray-100 overflow-hidden">
-                          {product.previewVideoUrl ? (
-                            <video
-                              src={product.previewVideoUrl}
-                              alt={product.title}
-                              className="w-full h-auto object-contain product-card-image"
-                              autoPlay
-                              loop
-                              muted
-                              playsInline
-                            />
-                          ) : product.previewImagesUrls &&
-                            product.previewImagesUrls[0] ? (
-                            <img
-                              src={product.previewImagesUrls[0]}
-                              alt={product.title}
-                              className="w-full h-auto object-contain product-card-image"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <ShoppingBag className="h-16 w-16 text-gray-300" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-medium mb-1 tracking-tight line-clamp-2">
-                            {product.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            {product.category?.name || "Uncategorized"}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <p className="font-mono text-lg font-semibold text-primary">
-                              ₹{product.price}
+              <>
+                <div className="columns-1 sm:columns-2 lg:columns-2 xl:columns-3 gap-6 space-y-6">
+                  {currentProducts.map((product) => (
+                    <div
+                      key={product._id}
+                      className="break-inside-avoid mb-6 group"
+                      data-testid={`product-card-${product._id}`}
+                    >
+                      <Link to={`/product/${product._id}`}>
+                        <div className="hover-lift bg-white border rounded-lg overflow-hidden">
+                          <div className="bg-gray-100 overflow-hidden">
+                            {product.previewVideoUrl ? (
+                              <video
+                                src={product.previewVideoUrl}
+                                alt={product.title}
+                                className="w-full h-auto object-contain product-card-image"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                              />
+                            ) : product.previewImagesUrls &&
+                              product.previewImagesUrls[0] ? (
+                              <img
+                                src={product.previewImagesUrls[0]}
+                                alt={product.title}
+                                className="w-full h-auto object-contain product-card-image"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ShoppingBag className="h-16 w-16 text-gray-300" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-4">
+                            <h3 className="font-medium mb-1 tracking-tight line-clamp-2">
+                              {product.title}
+                            </h3>
+                            <p className="text-xs text-muted-foreground mb-3">
+                              {product.category?.name || "Uncategorized"}
                             </p>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => handleAddToCart(product, e)}
-                              data-testid="add-to-cart-button"
-                            >
-                              Add to Cart
-                            </Button>
+                            <div className="flex items-center justify-between">
+                              <p className="font-mono text-lg font-semibold text-primary">
+                                ₹{product.price}
+                              </p>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => handleAddToCart(product, e)}
+                                data-testid="add-to-cart-button"
+                              >
+                                Add to Cart
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (number) => (
+                          <Button
+                            key={number}
+                            variant={
+                              currentPage === number ? "default" : "outline"
+                            }
+                            size="sm"
+                            onClick={() => paginate(number)}
+                            className="min-w-[40px]"
+                          >
+                            {number}
+                          </Button>
+                        ),
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Page {currentPage} of {totalPages}
+                    </p>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </main>
         </div>
@@ -263,6 +388,17 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/90 transition-all z-50"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 }

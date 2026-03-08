@@ -200,7 +200,9 @@ export default function ProductDetailPage() {
                     Size: {(product.fileSize / (1024 * 1024)).toFixed(2)} MB
                   </li>
                 )}
-                <li>Downloads: {product.downloads}</li>
+                {user?.role === "admin" && (
+                  <li>Downloads: {product.downloads}</li>
+                )}
               </ul>
             </div>
 
@@ -215,6 +217,40 @@ export default function ProductDetailPage() {
                   Download from Dashboard
                 </Button>
               </Link>
+            ) : product.isFree ? (
+              <Button
+                className="w-full bg-green-600 hover:bg-green-700"
+                size="lg"
+                onClick={async () => {
+                  try {
+                    const response = await axios.get(
+                      `${API_URL}/api/products/${id}/download`,
+                      {
+                        headers: isAuthenticated
+                          ? { Authorization: `Bearer ${token}` }
+                          : {},
+                        responseType: "blob",
+                      },
+                    );
+                    const url = window.URL.createObjectURL(
+                      new Blob([response.data]),
+                    );
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", product.fileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    toast.success("Download started!");
+                  } catch (error) {
+                    toast.error("Download failed. Please try again.");
+                  }
+                }}
+                data-testid="free-download-button"
+              >
+                <Download className="h-5 w-5 mr-2" strokeWidth={1.5} />
+                Free Download
+              </Button>
             ) : (
               <div className="space-y-3">
                 <Button

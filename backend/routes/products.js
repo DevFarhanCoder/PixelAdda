@@ -91,7 +91,7 @@ router.post(
   ]),
   async (req, res) => {
     try {
-      const { title, description, category, price } = req.body;
+      const { title, description, category, price, isFree } = req.body;
 
       if (!req.files || !req.files.file || !req.files.file[0]) {
         return res.status(400).json({ error: "Product file is required" });
@@ -156,6 +156,7 @@ router.post(
         description,
         category,
         price,
+        isFree: isFree === "true" || isFree === true,
         previewImages,
         previewVideo: previewVideoKey,
         fileKey,
@@ -185,8 +186,16 @@ router.put(
   ]),
   async (req, res) => {
     try {
-      const { title, description, category, price, isActive } = req.body;
-      const updateData = { title, description, category, price, isActive };
+      const { title, description, category, price, isActive, isFree } =
+        req.body;
+      const updateData = {
+        title,
+        description,
+        category,
+        price,
+        isActive,
+        isFree: isFree === "true" || isFree === true,
+      };
 
       if (req.files && req.files.file && req.files.file[0]) {
         const file = req.files.file[0];
@@ -264,8 +273,8 @@ router.delete("/:id", protect, adminOnly, async (req, res) => {
   }
 });
 
-// Get download URL (Protected - only for purchased products)
-router.get("/:id/download", protect, async (req, res) => {
+// Get download URL (Protected - only for purchased products or free products)
+router.get("/:id/download", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -273,14 +282,40 @@ router.get("/:id/download", protect, async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Check if user has purchased this product
-    if (
-      !req.user.purchasedProducts.includes(product._id.toString()) &&
-      req.user.role !== "admin"
-    ) {
-      return res
-        .status(403)
-        .json({ error: "You have not purchased this product" });
+    // Allow download if product is free
+    if (!product.isFree) {
+      // For paid products, require authentication
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: "Authentication required for paid products" });
+      }
+
+      // Verify token for paid products
+      const token = req.headers.authorization.split(" ")[1];
+      const jwt = require("jsonwebtoken");
+      const User = require("../models/User");
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+          return res.status(401).json({ error: "User not found" });
+        }
+
+        // Check if user has purchased this product
+        if (
+          !user.purchasedProducts.includes(product._id.toString()) &&
+          user.role !== "admin"
+        ) {
+          return res
+            .status(403)
+            .json({ error: "You have not purchased this product" });
+        }
+      } catch (err) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
     }
 
     const downloadUrl = await getSignedDownloadUrl(

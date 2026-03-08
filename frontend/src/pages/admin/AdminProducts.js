@@ -1,22 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AdminSidebar } from '../../components/AdminSidebar';
-import { useAuth } from '../../context/AuthContext';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Plus, Pencil, Trash2, Upload } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AdminSidebar } from "../../components/AdminSidebar";
+import { useAuth } from "../../context/AuthContext";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { Checkbox } from "../../components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import { Plus, Pencil, Trash2, Upload } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../components/ui/dialog';
+} from "../../components/ui/dialog";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -29,17 +36,18 @@ export default function AdminProducts() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    price: '',
+    title: "",
+    description: "",
+    category: "",
+    price: "",
+    isFree: false,
     previewImages: null,
-    file: null
+    file: null,
   });
 
   useEffect(() => {
     if (!isAuthenticated || !isAdmin) {
-      navigate('/admin/login');
+      navigate("/admin/login");
       return;
     }
     fetchProducts();
@@ -49,11 +57,11 @@ export default function AdminProducts() {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/admin/products`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
@@ -64,7 +72,7 @@ export default function AdminProducts() {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -72,54 +80,58 @@ export default function AdminProducts() {
     e.preventDefault();
 
     const data = new FormData();
-    data.append('title', formData.title);
-    data.append('description', formData.description);
-    data.append('category', formData.category);
-    data.append('price', formData.price);
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("category", formData.category);
+    data.append("price", formData.price);
+    data.append("isFree", formData.isFree);
 
     if (formData.previewImages) {
-      Array.from(formData.previewImages).forEach(file => {
-        data.append('previewImages', file);
+      Array.from(formData.previewImages).forEach((file) => {
+        data.append("previewImages", file);
       });
     }
 
     if (formData.file) {
-      data.append('file', formData.file);
+      data.append("file", formData.file);
     }
 
     try {
       if (editingProduct) {
-        await axios.put(
-          `${API_URL}/api/products/${editingProduct._id}`,
-          data,
-          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
-        );
-        toast.success('Product updated successfully');
+        await axios.put(`${API_URL}/api/products/${editingProduct._id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Product updated successfully");
       } else {
-        await axios.post(
-          `${API_URL}/api/products`,
-          data,
-          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
-        );
-        toast.success('Product created successfully');
+        await axios.post(`${API_URL}/api/products`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Product created successfully");
       }
 
       setDialogOpen(false);
       resetForm();
       fetchProducts();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Operation failed');
+      toast.error(error.response?.data?.error || "Operation failed");
     }
   };
 
   const resetForm = () => {
     setFormData({
-      title: '',
-      description: '',
-      category: '',
-      price: '',
+      title: "",
+      description: "",
+      category: "",
+      price: "",
+      isFree: false,
       previewImages: null,
-      file: null
+      file: null,
     });
     setEditingProduct(null);
   };
@@ -131,23 +143,25 @@ export default function AdminProducts() {
       description: product.description,
       category: product.category._id,
       price: product.price,
+      isFree: product.isFree || false,
       previewImages: null,
-      file: null
+      file: null,
     });
     setDialogOpen(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
     try {
       await axios.delete(`${API_URL}/api/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Product deleted successfully');
+      toast.success("Product deleted successfully");
       fetchProducts();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Delete failed');
+      toast.error(error.response?.data?.error || "Delete failed");
     }
   };
 
@@ -165,13 +179,16 @@ export default function AdminProducts() {
   return (
     <div className="flex min-h-screen bg-white">
       <AdminSidebar active="products" />
-      
+
       <div className="flex-1 ml-64">
         <header className="border-b p-6 flex items-center justify-between">
-          <h1 className="text-3xl font-semibold tracking-tight" data-testid="products-heading">
+          <h1
+            className="text-3xl font-semibold tracking-tight"
+            data-testid="products-heading"
+          >
             Products
           </h1>
-          
+
           <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
               <Button data-testid="add-product-button">
@@ -181,15 +198,23 @@ export default function AdminProducts() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{editingProduct ? 'Edit Product' : 'Create Product'}</DialogTitle>
+                <DialogTitle>
+                  {editingProduct ? "Edit Product" : "Create Product"}
+                </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4" data-testid="product-form">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4"
+                data-testid="product-form"
+              >
                 <div>
                   <Label htmlFor="title">Title</Label>
                   <Input
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     required
                     data-testid="product-title-input"
                   />
@@ -200,7 +225,9 @@ export default function AdminProducts() {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     required
                     rows={4}
                     data-testid="product-description-input"
@@ -211,14 +238,16 @@ export default function AdminProducts() {
                   <Label htmlFor="category">Category</Label>
                   <Select
                     value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, category: value })
+                    }
                     required
                   >
                     <SelectTrigger data-testid="product-category-select">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(category => (
+                      {categories.map((category) => (
                         <SelectItem key={category._id} value={category._id}>
                           {category.name}
                         </SelectItem>
@@ -233,11 +262,30 @@ export default function AdminProducts() {
                     id="price"
                     type="number"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, price: e.target.value })
+                    }
                     required
                     min="0"
                     data-testid="product-price-input"
                   />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isFree"
+                    checked={formData.isFree}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, isFree: checked })
+                    }
+                    data-testid="product-isfree-checkbox"
+                  />
+                  <Label
+                    htmlFor="isFree"
+                    className="font-normal cursor-pointer"
+                  >
+                    Free Product (Allow direct download without payment)
+                  </Label>
                 </div>
 
                 <div>
@@ -247,10 +295,17 @@ export default function AdminProducts() {
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => setFormData({ ...formData, previewImages: e.target.files })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        previewImages: e.target.files,
+                      })
+                    }
                     data-testid="product-preview-input"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Upload up to 5 preview images</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Upload up to 5 preview images
+                  </p>
                 </div>
 
                 <div>
@@ -258,18 +313,26 @@ export default function AdminProducts() {
                   <Input
                     id="file"
                     type="file"
-                    onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, file: e.target.files[0] })
+                    }
                     required={!editingProduct}
                     data-testid="product-file-input"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    {editingProduct ? 'Leave empty to keep existing file' : 'Upload the downloadable design file'}
+                    {editingProduct
+                      ? "Leave empty to keep existing file"
+                      : "Upload the downloadable design file"}
                   </p>
                 </div>
 
-                <Button type="submit" className="w-full" data-testid="product-submit-button">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  data-testid="product-submit-button"
+                >
                   <Upload className="h-4 w-4 mr-2" strokeWidth={1.5} />
-                  {editingProduct ? 'Update Product' : 'Create Product'}
+                  {editingProduct ? "Update Product" : "Create Product"}
                 </Button>
               </form>
             </DialogContent>
@@ -281,7 +344,9 @@ export default function AdminProducts() {
             <p>Loading...</p>
           ) : products.length === 0 ? (
             <div className="text-center py-16" data-testid="no-products">
-              <p className="text-muted-foreground">No products yet. Create your first one!</p>
+              <p className="text-muted-foreground">
+                No products yet. Create your first one!
+              </p>
             </div>
           ) : (
             <div className="border rounded-md">
@@ -296,16 +361,26 @@ export default function AdminProducts() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map(product => (
-                    <tr key={product._id} className="border-b last:border-0" data-testid={`product-row-${product._id}`}>
+                  {products.map((product) => (
+                    <tr
+                      key={product._id}
+                      className="border-b last:border-0"
+                      data-testid={`product-row-${product._id}`}
+                    >
                       <td className="p-4 font-medium">{product.title}</td>
-                      <td className="p-4 text-muted-foreground">{product.category?.name || 'N/A'}</td>
+                      <td className="p-4 text-muted-foreground">
+                        {product.category?.name || "N/A"}
+                      </td>
                       <td className="p-4 font-mono">₹{product.price}</td>
                       <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {product.isActive ? 'Active' : 'Inactive'}
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            product.isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {product.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
                       <td className="p-4 text-right space-x-2">
