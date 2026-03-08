@@ -134,12 +134,33 @@ export default function SearchResultsPage() {
                     {product.previewVideoUrl ? (
                       <video
                         src={product.previewVideoUrl}
+                        poster={
+                          product.previewImagesUrls &&
+                          product.previewImagesUrls[0]
+                            ? product.previewImagesUrls[0]
+                            : undefined
+                        }
                         alt={product.title}
                         className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300"
                         autoPlay
                         loop
                         muted
                         playsInline
+                        onError={(e) => {
+                          // If video fails to load, show thumbnail instead
+                          if (
+                            product.previewImagesUrls &&
+                            product.previewImagesUrls[0]
+                          ) {
+                            e.target.style.display = "none";
+                            const img = document.createElement("img");
+                            img.src = product.previewImagesUrls[0];
+                            img.alt = product.title;
+                            img.className =
+                              "w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300";
+                            e.target.parentNode.appendChild(img);
+                          }
+                        }}
                       />
                     ) : product.previewImagesUrls &&
                       product.previewImagesUrls[0] ? (

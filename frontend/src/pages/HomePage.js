@@ -266,12 +266,33 @@ export default function HomePage() {
                             {product.previewVideoUrl ? (
                               <video
                                 src={product.previewVideoUrl}
+                                poster={
+                                  product.previewImagesUrls &&
+                                  product.previewImagesUrls[0]
+                                    ? product.previewImagesUrls[0]
+                                    : undefined
+                                }
                                 alt={product.title}
                                 className="w-full h-auto object-contain product-card-image"
                                 autoPlay
                                 loop
                                 muted
                                 playsInline
+                                onError={(e) => {
+                                  // If video fails to load, show thumbnail instead
+                                  if (
+                                    product.previewImagesUrls &&
+                                    product.previewImagesUrls[0]
+                                  ) {
+                                    e.target.style.display = "none";
+                                    const img = document.createElement("img");
+                                    img.src = product.previewImagesUrls[0];
+                                    img.alt = product.title;
+                                    img.className =
+                                      "w-full h-auto object-contain product-card-image";
+                                    e.target.parentNode.appendChild(img);
+                                  }
+                                }}
                               />
                             ) : product.previewImagesUrls &&
                               product.previewImagesUrls[0] ? (
