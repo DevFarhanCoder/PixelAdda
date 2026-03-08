@@ -83,7 +83,8 @@ export default function AdminProducts() {
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("category", formData.category);
-    data.append("price", formData.price);
+    // Set price to 0 for free products if not provided
+    data.append("price", formData.isFree && !formData.price ? "0" : formData.price);
     data.append("isFree", formData.isFree);
 
     if (formData.previewImages) {
@@ -257,7 +258,9 @@ export default function AdminProducts() {
                 </div>
 
                 <div>
-                  <Label htmlFor="price">Price (₹)</Label>
+                  <Label htmlFor="price">
+                    Price (₹){formData.isFree && <span className="text-muted-foreground text-xs ml-2">(Optional for free products)</span>}
+                  </Label>
                   <Input
                     id="price"
                     type="number"
@@ -265,8 +268,9 @@ export default function AdminProducts() {
                     onChange={(e) =>
                       setFormData({ ...formData, price: e.target.value })
                     }
-                    required
+                    required={!formData.isFree}
                     min="0"
+                    placeholder={formData.isFree ? "0 (free)" : ""}
                     data-testid="product-price-input"
                   />
                 </div>
