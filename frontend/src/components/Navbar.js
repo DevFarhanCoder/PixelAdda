@@ -132,6 +132,13 @@ export default function Navbar() {
               />
             </Link>
 
+            {/* Browse/Filter Link */}
+            <Link to="/filter" className="mr-6 hidden lg:block">
+              <Button variant="ghost" size="default" className="h-12 text-base">
+                Browse All
+              </Button>
+            </Link>
+
             {/* Search Bar */}
             <form
               onSubmit={handleSearch}

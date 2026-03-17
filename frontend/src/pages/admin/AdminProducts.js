@@ -43,6 +43,13 @@ export default function AdminProducts() {
     isFree: false,
     previewImages: null,
     file: null,
+    productType: "other",
+    // Multiple file formats
+    epsFile: null,
+    aiFile: null,
+    cdrFile: null,
+    psdFile: null,
+    jpegFile: null,
   });
 
   useEffect(() => {
@@ -89,6 +96,7 @@ export default function AdminProducts() {
       formData.isFree && !formData.price ? "0" : formData.price,
     );
     data.append("isFree", formData.isFree);
+    data.append("productType", formData.productType);
 
     if (formData.previewImages) {
       Array.from(formData.previewImages).forEach((file) => {
@@ -96,6 +104,14 @@ export default function AdminProducts() {
       });
     }
 
+    // Append multiple file formats
+    if (formData.epsFile) data.append("epsFile", formData.epsFile);
+    if (formData.aiFile) data.append("aiFile", formData.aiFile);
+    if (formData.cdrFile) data.append("cdrFile", formData.cdrFile);
+    if (formData.psdFile) data.append("psdFile", formData.psdFile);
+    if (formData.jpegFile) data.append("jpegFile", formData.jpegFile);
+
+    // Legacy single file support
     if (formData.file) {
       data.append("file", formData.file);
     }
@@ -321,22 +337,144 @@ export default function AdminProducts() {
                 </div>
 
                 <div>
-                  <Label htmlFor="file">Product File (ZIP, PSD, AI, CDR)</Label>
-                  <Input
-                    id="file"
-                    type="file"
-                    onChange={(e) =>
-                      setFormData({ ...formData, file: e.target.files[0] })
+                  <Label htmlFor="productType">Product Type</Label>
+                  <Select
+                    value={formData.productType}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, productType: value })
                     }
-                    required={!editingProduct}
-                    data-testid="product-file-input"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {editingProduct
-                      ? "Leave empty to keep existing file"
-                      : "Upload the downloadable design file"}
-                  </p>
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="vector">
+                        Vector (EPS, AI, CDR)
+                      </SelectItem>
+                      <SelectItem value="raster">Raster (PSD, JPEG)</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="template">Template</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {(formData.productType === "vector" ||
+                  formData.productType === "raster") && (
+                  <div className="space-y-3 p-4 border rounded-lg bg-muted/10">
+                    <h4 className="text-sm font-semibold">
+                      Upload File Formats
+                    </h4>
+
+                    {formData.productType === "vector" && (
+                      <>
+                        <div>
+                          <Label htmlFor="epsFile">EPS File</Label>
+                          <Input
+                            id="epsFile"
+                            type="file"
+                            accept=".eps"
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                epsFile: e.target.files[0],
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="aiFile">AI File (Illustrator)</Label>
+                          <Input
+                            id="aiFile"
+                            type="file"
+                            accept=".ai"
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                aiFile: e.target.files[0],
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="cdrFile">CDR File (CorelDRAW)</Label>
+                          <Input
+                            id="cdrFile"
+                            type="file"
+                            accept=".cdr"
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                cdrFile: e.target.files[0],
+                              })
+                            }
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {formData.productType === "raster" && (
+                      <div>
+                        <Label htmlFor="psdFile">PSD File (Photoshop)</Label>
+                        <Input
+                          id="psdFile"
+                          type="file"
+                          accept=".psd"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              psdFile: e.target.files[0],
+                            })
+                          }
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <Label htmlFor="jpegFile">
+                        JPEG Preview File (Required)
+                      </Label>
+                      <Input
+                        id="jpegFile"
+                        type="file"
+                        accept=".jpg,.jpeg"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            jpegFile: e.target.files[0],
+                          })
+                        }
+                        required={!editingProduct}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Upload a high-quality JPEG for preview/download
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.productType !== "vector" &&
+                  formData.productType !== "raster" && (
+                    <div>
+                      <Label htmlFor="file">
+                        Product File (ZIP, PSD, AI, CDR, Video)
+                      </Label>
+                      <Input
+                        id="file"
+                        type="file"
+                        onChange={(e) =>
+                          setFormData({ ...formData, file: e.target.files[0] })
+                        }
+                        required={!editingProduct}
+                        data-testid="product-file-input"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {editingProduct
+                          ? "Leave empty to keep existing file"
+                          : "Upload the downloadable design file"}
+                      </p>
+                    </div>
+                  )}
 
                 <Button
                   type="submit"

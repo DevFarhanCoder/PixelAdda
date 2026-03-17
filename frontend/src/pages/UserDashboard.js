@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import Navbar from '../components/Navbar';
+import { DownloadOptionsDialog } from '../components/DownloadOptionsDialog';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -33,20 +34,6 @@ export default function UserDashboard() {
       console.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDownload = async (productId, productTitle) => {
-    try {
-      const response = await axios.get(
-        `${API_URL}/api/products/${productId}/download`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      window.open(response.data.downloadUrl, '_blank');
-      toast.success('Download started!');
-    } catch (error) {
-      toast.error('Download failed');
     }
   };
 
@@ -110,15 +97,11 @@ export default function UserDashboard() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Purchased on {new Date(order.createdAt).toLocaleDateString()}
                   </p>
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => handleDownload(order.product._id, order.product.title)}
-                    data-testid="download-button"
-                  >
-                    <Download className="h-4 w-4 mr-2" strokeWidth={1.5} />
-                    Download
-                  </Button>
+                  <DownloadOptionsDialog
+                    productId={order.product._id}
+                    productTitle={order.product.title}
+                    token={token}
+                  />
                 </div>
               ))}
             </div>

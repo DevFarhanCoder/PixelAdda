@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { toast } from "sonner";
 import Navbar from "../components/Navbar";
+import { DownloadOptionsDialog } from "../components/DownloadOptionsDialog";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -207,50 +208,18 @@ export default function ProductDetailPage() {
             </div>
 
             {hasPurchased ? (
-              <Link to="/dashboard">
-                <Button
-                  className="w-full"
-                  size="lg"
-                  data-testid="goto-dashboard-button"
-                >
-                  <Download className="h-5 w-5 mr-2" strokeWidth={1.5} />
-                  Download from Dashboard
-                </Button>
-              </Link>
+              <DownloadOptionsDialog
+                productId={id}
+                productTitle={product.title}
+                token={token}
+              />
             ) : product.isFree ? (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                size="lg"
-                onClick={async () => {
-                  try {
-                    const response = await axios.get(
-                      `${API_URL}/api/products/${id}/download`,
-                      {
-                        headers: isAuthenticated
-                          ? { Authorization: `Bearer ${token}` }
-                          : {},
-                        responseType: "blob",
-                      },
-                    );
-                    const url = window.URL.createObjectURL(
-                      new Blob([response.data]),
-                    );
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.setAttribute("download", product.fileName);
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                    toast.success("Download started!");
-                  } catch (error) {
-                    toast.error("Download failed. Please try again.");
-                  }
-                }}
-                data-testid="free-download-button"
-              >
-                <Download className="h-5 w-5 mr-2" strokeWidth={1.5} />
-                Free Download
-              </Button>
+              <DownloadOptionsDialog
+                productId={id}
+                productTitle={product.title}
+                token={token}
+                isFree={true}
+              />
             ) : (
               <div className="space-y-3">
                 <Button
