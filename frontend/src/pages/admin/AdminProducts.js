@@ -84,7 +84,10 @@ export default function AdminProducts() {
     data.append("description", formData.description);
     data.append("category", formData.category);
     // Set price to 0 for free products if not provided
-    data.append("price", formData.isFree && !formData.price ? "0" : formData.price);
+    data.append(
+      "price",
+      formData.isFree && !formData.price ? "0" : formData.price,
+    );
     data.append("isFree", formData.isFree);
 
     if (formData.previewImages) {
@@ -259,7 +262,12 @@ export default function AdminProducts() {
 
                 <div>
                   <Label htmlFor="price">
-                    Price (₹){formData.isFree && <span className="text-muted-foreground text-xs ml-2">(Optional for free products)</span>}
+                    Price (₹)
+                    {formData.isFree && (
+                      <span className="text-muted-foreground text-xs ml-2">
+                        (Optional for free products)
+                      </span>
+                    )}
                   </Label>
                   <Input
                     id="price"

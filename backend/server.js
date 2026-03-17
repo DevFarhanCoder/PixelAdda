@@ -17,6 +17,10 @@ const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
   : ["*"];
 
+console.log("🔒 CORS Configuration:");
+console.log("   Allowed origins:", allowedOrigins);
+console.log("   Raw CORS_ORIGINS:", process.env.CORS_ORIGINS);
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -25,10 +29,11 @@ app.use(
 
       // Check if origin is allowed
       if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
+        console.log("✅ CORS allowed for origin:", origin);
         callback(null, true);
       } else {
-        console.log("CORS blocked origin:", origin);
-        console.log("Allowed origins:", allowedOrigins);
+        console.log("❌ CORS blocked origin:", origin);
+        console.log("   Allowed origins:", allowedOrigins);
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -82,11 +87,13 @@ const productRoutes = require("./routes/products");
 const orderRoutes = require("./routes/orders");
 const paymentRoutes = require("./routes/payment");
 const adminRoutes = require("./routes/admin");
+const downloadRoutes = require("./routes/downloads");
 
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/downloads", downloadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin", adminRoutes);
