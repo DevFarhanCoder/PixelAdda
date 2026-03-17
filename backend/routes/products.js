@@ -76,34 +76,34 @@ router.get("/filter", async (req, res) => {
     // Filter by file format (eps, ai, cdr, psd, jpeg, png, mp4)
     if (format) {
       const formats = Array.isArray(format) ? format : [format];
-      filter['files.format'] = { $in: formats.map(f => f.toUpperCase()) };
+      filter["files.format"] = { $in: formats.map((f) => f.toUpperCase()) };
     }
 
     // Filter by price range
     if (price) {
       const prices = Array.isArray(price) ? price : [price];
       const priceConditions = [];
-      
-      prices.forEach(p => {
+
+      prices.forEach((p) => {
         switch (p) {
-          case 'free':
+          case "free":
             priceConditions.push({ isFree: true });
             break;
-          case 'paid':
+          case "paid":
             priceConditions.push({ isFree: false });
             break;
-          case 'under100':
+          case "under100":
             priceConditions.push({ price: { $lt: 100 }, isFree: false });
             break;
-          case 'under500':
+          case "under500":
             priceConditions.push({ price: { $lt: 500 }, isFree: false });
             break;
-          case 'under1000':
+          case "under1000":
             priceConditions.push({ price: { $lt: 1000 }, isFree: false });
             break;
         }
       });
-      
+
       if (priceConditions.length > 0) {
         filter.$or = priceConditions;
       }

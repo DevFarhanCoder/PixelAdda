@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Download, Check } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Download, Check } from "lucide-react";
+import { Button } from "../components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,26 +9,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../components/ui/dialog';
+} from "../components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { Label } from '../components/ui/label';
+} from "../components/ui/select";
+import { Label } from "../components/ui/label";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-export function DownloadOptionsDialog({ productId, token, productTitle, className, isFree = false }) {
+export function DownloadOptionsDialog({
+  productId,
+  token,
+  productTitle,
+  className,
+  isFree = false,
+}) {
   const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [selectedSize, setSelectedSize] = useState('original');
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedSize, setSelectedSize] = useState("original");
   const [downloading, setDownloading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const buttonClass = isFree ? "w-full bg-green-600 hover:bg-green-700" : (className || "w-full");
+  const buttonClass = isFree
+    ? "w-full bg-green-600 hover:bg-green-700"
+    : className || "w-full";
 
   useEffect(() => {
     if (open) {
@@ -38,13 +46,17 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
 
   const fetchDownloadOptions = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/downloads/${productId}/options`);
+      const response = await axios.get(
+        `${API_URL}/api/downloads/${productId}/options`,
+      );
       setOptions(response.data.options || []);
       if (response.data.options && response.data.options.length > 0) {
-        setSelectedOption(response.data.options[0].key || response.data.options[0].type);
+        setSelectedOption(
+          response.data.options[0].key || response.data.options[0].type,
+        );
       }
     } catch (error) {
-      console.error('Error fetching download options:', error);
+      console.error("Error fetching download options:", error);
     }
   };
 
@@ -61,15 +73,15 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-          responseType: 'blob',
-        }
+          responseType: "blob",
+        },
       );
 
       // Download the ZIP file
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${productTitle}_${selectedSize}.zip`);
+      link.setAttribute("download", `${productTitle}_${selectedSize}.zip`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -77,18 +89,18 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
 
       setOpen(false);
     } catch (error) {
-      console.error('Error downloading:', error);
-      alert('Error downloading file. Please try again.');
+      console.error("Error downloading:", error);
+      alert("Error downloading file. Please try again.");
     } finally {
       setDownloading(false);
     }
   };
 
   const sizeOptions = [
-    { value: 'small', label: 'Small - 714 × 1000px' },
-    { value: 'medium', label: 'Medium - 1071 × 1500px' },
-    { value: 'large', label: 'Large - 1428 × 2000px' },
-    { value: 'original', label: 'Original Size' },
+    { value: "small", label: "Small - 714 × 1000px" },
+    { value: "medium", label: "Medium - 1071 × 1500px" },
+    { value: "large", label: "Large - 1428 × 2000px" },
+    { value: "original", label: "Original Size" },
   ];
 
   return (
@@ -96,7 +108,7 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
       <DialogTrigger asChild>
         <Button className={buttonClass} size="lg">
           <Download className="h-5 w-5 mr-2" strokeWidth={1.5} />
-          {isFree ? 'Free Download' : 'Download Files'}
+          {isFree ? "Free Download" : "Download Files"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -115,8 +127,8 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
               </SelectTrigger>
               <SelectContent>
                 {options.map((option, index) => (
-                  <SelectItem 
-                    key={option.key || `option-${index}`} 
+                  <SelectItem
+                    key={option.key || `option-${index}`}
                     value={option.key || option.type}
                   >
                     {option.label}
@@ -142,13 +154,13 @@ export function DownloadOptionsDialog({ productId, token, productTitle, classNam
             </Select>
           </div>
 
-          <Button 
-            onClick={handleDownload} 
+          <Button
+            onClick={handleDownload}
             disabled={downloading || !selectedOption}
             className="w-full"
           >
             {downloading ? (
-              'Preparing Download...'
+              "Preparing Download..."
             ) : (
               <>
                 <Check className="h-4 w-4 mr-2" />

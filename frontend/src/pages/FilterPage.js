@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import axios from 'axios';
-import { ShoppingCart, Filter, SlidersHorizontal } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import React, { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import axios from "axios";
+import { ShoppingCart, Filter, SlidersHorizontal } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
 import {
   Sheet,
   SheetContent,
@@ -11,46 +11,46 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '../components/ui/sheet';
-import { Checkbox } from '../components/ui/checkbox';
-import { Label } from '../components/ui/label';
-import { Separator } from '../components/ui/separator';
-import Navbar from '../components/Navbar';
+} from "../components/ui/sheet";
+import { Checkbox } from "../components/ui/checkbox";
+import { Label } from "../components/ui/label";
+import { Separator } from "../components/ui/separator";
+import Navbar from "../components/Navbar";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Filter categories based on product types and file formats
 const FILTER_CATEGORIES = {
   productType: {
-    label: 'Product Type',
+    label: "Product Type",
     options: [
-      { value: 'vector', label: 'Vectors', icon: '🎨' },
-      { value: 'raster', label: 'Photos & Images', icon: '📷' },
-      { value: 'video', label: 'Videos', icon: '🎬' },
-      { value: 'template', label: 'Templates', icon: '📋' },
-      { value: 'other', label: 'Other', icon: '📦' },
+      { value: "vector", label: "Vectors", icon: "🎨" },
+      { value: "raster", label: "Photos & Images", icon: "📷" },
+      { value: "video", label: "Videos", icon: "🎬" },
+      { value: "template", label: "Templates", icon: "📋" },
+      { value: "other", label: "Other", icon: "📦" },
     ],
   },
   fileFormat: {
-    label: 'File Format',
+    label: "File Format",
     options: [
-      { value: 'eps', label: 'EPS' },
-      { value: 'ai', label: 'AI (Adobe Illustrator)' },
-      { value: 'cdr', label: 'CDR (CorelDRAW)' },
-      { value: 'psd', label: 'PSD (Photoshop)' },
-      { value: 'jpeg', label: 'JPEG' },
-      { value: 'png', label: 'PNG' },
-      { value: 'mp4', label: 'MP4' },
+      { value: "eps", label: "EPS" },
+      { value: "ai", label: "AI (Adobe Illustrator)" },
+      { value: "cdr", label: "CDR (CorelDRAW)" },
+      { value: "psd", label: "PSD (Photoshop)" },
+      { value: "jpeg", label: "JPEG" },
+      { value: "png", label: "PNG" },
+      { value: "mp4", label: "MP4" },
     ],
   },
   price: {
-    label: 'Price',
+    label: "Price",
     options: [
-      { value: 'free', label: 'Free' },
-      { value: 'paid', label: 'Paid' },
-      { value: 'under100', label: 'Under ₹100' },
-      { value: 'under500', label: 'Under ₹500' },
-      { value: 'under1000', label: 'Under ₹1000' },
+      { value: "free", label: "Free" },
+      { value: "paid", label: "Paid" },
+      { value: "under100", label: "Under ₹100" },
+      { value: "under500", label: "Under ₹500" },
+      { value: "under1000", label: "Under ₹1000" },
     ],
   },
 };
@@ -70,10 +70,10 @@ export default function FilterPage() {
   // Get initial filters from URL params
   useEffect(() => {
     const initialFilters = {
-      productType: searchParams.getAll('type'),
-      fileFormat: searchParams.getAll('format'),
-      price: searchParams.getAll('price'),
-      category: searchParams.getAll('category'),
+      productType: searchParams.getAll("type"),
+      fileFormat: searchParams.getAll("format"),
+      price: searchParams.getAll("price"),
+      category: searchParams.getAll("category"),
     };
     setFilters(initialFilters);
   }, []);
@@ -93,7 +93,7 @@ export default function FilterPage() {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -101,17 +101,19 @@ export default function FilterPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      
-      // Add filters to query params
-      filters.productType.forEach(type => params.append('type', type));
-      filters.fileFormat.forEach(format => params.append('format', format));
-      filters.price.forEach(price => params.append('price', price));
-      filters.category.forEach(cat => params.append('category', cat));
 
-      const response = await axios.get(`${API_URL}/api/products/filter?${params.toString()}`);
+      // Add filters to query params
+      filters.productType.forEach((type) => params.append("type", type));
+      filters.fileFormat.forEach((format) => params.append("format", format));
+      filters.price.forEach((price) => params.append("price", price));
+      filters.category.forEach((cat) => params.append("category", cat));
+
+      const response = await axios.get(
+        `${API_URL}/api/products/filter?${params.toString()}`,
+      );
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
       setProducts([]);
     } finally {
       setLoading(false);
@@ -119,23 +121,23 @@ export default function FilterPage() {
   };
 
   const handleFilterChange = (category, value) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       const updated = { ...prev };
       if (updated[category].includes(value)) {
         // Remove filter
-        updated[category] = updated[category].filter(item => item !== value);
+        updated[category] = updated[category].filter((item) => item !== value);
       } else {
         // Add filter
         updated[category] = [...updated[category], value];
       }
-      
+
       // Update URL params
       const newParams = new URLSearchParams();
       Object.entries(updated).forEach(([key, values]) => {
-        values.forEach(val => newParams.append(key, val));
+        values.forEach((val) => newParams.append(key, val));
       });
       setSearchParams(newParams);
-      
+
       return updated;
     });
   };
@@ -154,11 +156,16 @@ export default function FilterPage() {
     return Object.values(filters).flat().length;
   };
 
-  const FilterSection = ({ title, options, category, includeIcons = false }) => (
+  const FilterSection = ({
+    title,
+    options,
+    category,
+    includeIcons = false,
+  }) => (
     <div className="space-y-3">
       <h3 className="font-medium text-sm">{title}</h3>
       <div className="space-y-2">
-        {options.map(option => (
+        {options.map((option) => (
           <div key={option.value} className="flex items-center space-x-2">
             <Checkbox
               id={`${category}-${option.value}`}
@@ -187,21 +194,23 @@ export default function FilterPage() {
         category="productType"
         includeIcons={true}
       />
-      
+
       <Separator />
-      
+
       {/* Categories */}
       {categories.length > 0 && (
         <>
           <div className="space-y-3">
             <h3 className="font-medium text-sm">Categories</h3>
             <div className="space-y-2">
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <div key={cat._id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`cat-${cat._id}`}
                     checked={filters.category.includes(cat._id)}
-                    onCheckedChange={() => handleFilterChange('category', cat._id)}
+                    onCheckedChange={() =>
+                      handleFilterChange("category", cat._id)
+                    }
                   />
                   <Label
                     htmlFor={`cat-${cat._id}`}
@@ -216,32 +225,28 @@ export default function FilterPage() {
           <Separator />
         </>
       )}
-      
+
       {/* File Format */}
       <FilterSection
         title={FILTER_CATEGORIES.fileFormat.label}
         options={FILTER_CATEGORIES.fileFormat.options}
         category="fileFormat"
       />
-      
+
       <Separator />
-      
+
       {/* Price */}
       <FilterSection
         title={FILTER_CATEGORIES.price.label}
         options={FILTER_CATEGORIES.price.options}
         category="price"
       />
-      
+
       <Separator />
-      
+
       {/* Clear Filters */}
       {getActiveFilterCount() > 0 && (
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={clearAllFilters}
-        >
+        <Button variant="outline" className="w-full" onClick={clearAllFilters}>
           Clear All Filters
         </Button>
       )}
@@ -260,7 +265,7 @@ export default function FilterPage() {
               Browse Products
             </h1>
             <p className="text-muted-foreground">
-              {loading ? 'Loading...' : `${products.length} products found`}
+              {loading ? "Loading..." : `${products.length} products found`}
               {getActiveFilterCount() > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {getActiveFilterCount()} filters applied
@@ -321,7 +326,7 @@ export default function FilterPage() {
               </div>
             ) : (
               <div className="columns-1 sm:columns-2 xl:columns-3 gap-4 space-y-4">
-                {products.map(product => (
+                {products.map((product) => (
                   <Link
                     key={product._id}
                     to={`/product/${product._id}`}
@@ -336,13 +341,14 @@ export default function FilterPage() {
                             className="w-full object-cover"
                             muted
                             loop
-                            onMouseEnter={e => e.target.play()}
-                            onMouseLeave={e => {
+                            onMouseEnter={(e) => e.target.play()}
+                            onMouseLeave={(e) => {
                               e.target.pause();
                               e.target.currentTime = 0;
                             }}
                           />
-                        ) : product.previewImagesUrls && product.previewImagesUrls[0] ? (
+                        ) : product.previewImagesUrls &&
+                          product.previewImagesUrls[0] ? (
                           <img
                             src={product.previewImagesUrls[0]}
                             alt={product.title}
@@ -353,7 +359,7 @@ export default function FilterPage() {
                             <ShoppingCart className="h-16 w-16 text-gray-300" />
                           </div>
                         )}
-                        
+
                         {/* Free Badge */}
                         {product.isFree && (
                           <Badge className="absolute top-2 right-2 bg-green-600">
@@ -369,7 +375,7 @@ export default function FilterPage() {
                         </h3>
                         <div className="flex items-center justify-between">
                           <p className="font-mono text-sm">
-                            {product.isFree ? 'Free' : `₹${product.price}`}
+                            {product.isFree ? "Free" : `₹${product.price}`}
                           </p>
                           {product.category && (
                             <Badge variant="outline" className="text-xs">
