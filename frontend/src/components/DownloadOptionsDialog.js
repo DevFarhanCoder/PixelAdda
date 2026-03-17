@@ -75,9 +75,9 @@ export function DownloadOptionsDialog({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          className={`${buttonClass} justify-between gap-2`} 
-          size="lg" 
+        <Button
+          className={`${buttonClass} justify-between gap-2`}
+          size="lg"
           disabled={downloading}
         >
           <div className="flex items-center">
