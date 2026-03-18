@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { ShoppingBag, ArrowRight, Search, ArrowUp } from "lucide-react";
+import { ShoppingBag, ArrowRight, Search, ArrowUp, Play } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useCart } from "../context/CartContext";
@@ -15,6 +15,7 @@ export default function HomePage() {
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [videoProducts, setVideoProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -48,10 +49,20 @@ export default function HomePage() {
     }
   }, [selectedCategory]);
 
+  const fetchVideoProducts = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/products/filter?type=video`);
+      setVideoProducts(response.data.slice(0, 3)); // Only get first 3 videos
+    } catch (error) {
+      console.error("Error fetching video products:", error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchCategories();
     fetchProducts();
-  }, [fetchCategories, fetchProducts]);
+    fetchVideoProducts();
+  }, [fetchCategories, fetchProducts, fetchVideoProducts]);
 
   // Filter products based on search query and generate suggestions
   useEffect(() => {
@@ -364,6 +375,106 @@ export default function HomePage() {
           </main>
         </div>
       </div>
+
+      {/* Video Section */}
+      {videoProducts.length > 0 && (
+        <section className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold tracking-tight mb-2">
+                Watch Our <span className="text-purple-600">Fun Videos!</span> 🎬
+              </h2>
+              <p className="text-muted-foreground">
+                See our amazing designs in action
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              {videoProducts.map((video, index) => (
+                <Link
+                  key={video._id}
+                  to={`/product/${video._id}`}
+                  className="group"
+                >
+                  <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 z-10">
+                      <span
+                        className={`px-3 py-1 text-xs font-bold uppercase rounded-full ${
+                          index === 0
+                            ? "bg-red-500 text-white"
+                            : index === 1
+                              ? "bg-orange-500 text-white"
+                              : "bg-pink-500 text-white"
+                        }`}
+                      >
+                        {index === 0 ? "LIVE" : index === 1 ? "TRENDING" : "NEW"}
+                      </span>
+                    </div>
+
+                    {/* Video Preview */}
+                    <div className="relative aspect-video bg-gradient-to-br from-purple-100 to-blue-100">
+                      {video.previewVideoUrl ? (
+                        <>
+                          <video
+                            src={video.previewVideoUrl}
+                            className="w-full h-full object-cover"
+                            muted
+                            loop
+                            playsInline
+                            onMouseEnter={(e) => e.target.play()}
+                            onMouseLeave={(e) => e.target.pause()}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                            <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <Play className="h-8 w-8 text-purple-600 fill-purple-600 ml-1" />
+                            </div>
+                          </div>
+                        </>
+                      ) : video.previewImagesUrls && video.previewImagesUrls[0] ? (
+                        <>
+                          <img
+                            src={video.previewImagesUrls[0]}
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
+                              <Play className="h-8 w-8 text-purple-600 fill-purple-600 ml-1" />
+                            </div>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+
+                    {/* Video Info */}
+                    <div className="p-4 bg-white">
+                      <h3 className="font-semibold text-lg mb-1 line-clamp-1">
+                        {video.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {video.description || "Watch this amazing video"}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link to="/videos">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all"
+                >
+                  Watch More Videos
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t py-12 mt-16 bg-muted/20">
