@@ -126,7 +126,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center mr-12">
               <img
-                src="/Logo.jpg.jpeg"
+                src="/logo.png"
                 alt="Pixeladda"
                 className="h-12 sm:h-14 w-auto object-contain"
               />
@@ -136,6 +136,13 @@ export default function Navbar() {
             <Link to="/filter" className="mr-6 hidden lg:block">
               <Button variant="ghost" size="default" className="h-12 text-base">
                 Browse All
+              </Button>
+            </Link>
+
+            {/* Pricing Link */}
+            <Link to="/pricing" className="mr-6 hidden lg:block">
+              <Button variant="ghost" size="default" className="h-12 text-base">
+                Pricing
               </Button>
             </Link>
 

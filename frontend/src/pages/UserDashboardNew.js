@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -46,7 +46,15 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
-  const fetchDashboardData = useCallback(async () => {
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    fetchDashboardData();
+  }, [isAuthenticated]);
+
+  const fetchDashboardData = async () => {
     try {
       const [ordersRes, subscriptionRes, historyRes] = await Promise.all([
         axios.get(`${API_URL}/api/orders/my-orders`, {
@@ -69,15 +77,7 @@ export default function UserDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [token]);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    fetchDashboardData();
-  }, [isAuthenticated, navigate, fetchDashboardData]);
+  };
 
   const handleCancelSubscription = async () => {
     if (!window.confirm("Are you sure you want to cancel your subscription?")) {

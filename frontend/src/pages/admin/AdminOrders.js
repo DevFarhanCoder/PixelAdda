@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AdminSidebar } from '../../components/AdminSidebar';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AdminSidebar } from "../../components/AdminSidebar";
+import { useAuth } from "../../context/AuthContext";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -12,26 +12,26 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
-      navigate('/admin/login');
-      return;
-    }
-    fetchOrders();
-  }, [isAuthenticated, isAdmin]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/orders`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(response.data);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) {
+      navigate("/admin/login");
+      return;
+    }
+    fetchOrders();
+  }, [isAuthenticated, isAdmin, navigate, fetchOrders]);
 
   if (!isAuthenticated || !isAdmin) {
     return null;
@@ -40,10 +40,13 @@ export default function AdminOrders() {
   return (
     <div className="flex min-h-screen bg-white">
       <AdminSidebar active="orders" />
-      
+
       <div className="flex-1 ml-64">
         <header className="border-b p-6">
-          <h1 className="text-3xl font-semibold tracking-tight" data-testid="orders-heading">
+          <h1
+            className="text-3xl font-semibold tracking-tight"
+            data-testid="orders-heading"
+          >
             Orders
           </h1>
         </header>
@@ -69,25 +72,33 @@ export default function AdminOrders() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map(order => (
-                    <tr key={order._id} className="border-b last:border-0" data-testid={`order-row-${order._id}`}>
+                  {orders.map((order) => (
+                    <tr
+                      key={order._id}
+                      className="border-b last:border-0"
+                      data-testid={`order-row-${order._id}`}
+                    >
                       <td className="p-4 font-mono text-sm">{order.orderId}</td>
                       <td className="p-4">
                         <div>
                           <p className="font-medium">{order.user?.name}</p>
-                          <p className="text-xs text-muted-foreground">{order.user?.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {order.user?.email}
+                          </p>
                         </div>
                       </td>
                       <td className="p-4">{order.product?.title}</td>
                       <td className="p-4 font-mono">₹{order.amount}</td>
                       <td className="p-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          order.status === 'paid'
-                            ? 'bg-green-100 text-green-800'
-                            : order.status === 'failed'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            order.status === "paid"
+                              ? "bg-green-100 text-green-800"
+                              : order.status === "failed"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
                           {order.status}
                         </span>
                       </td>

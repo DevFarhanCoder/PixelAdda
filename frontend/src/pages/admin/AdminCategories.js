@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AdminSidebar } from '../../components/AdminSidebar';
-import { useAuth } from '../../context/AuthContext';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Textarea } from '../../components/ui/textarea';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AdminSidebar } from "../../components/AdminSidebar";
+import { useAuth } from "../../context/AuthContext";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../components/ui/dialog';
+} from "../../components/ui/dialog";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -26,26 +26,26 @@ export default function AdminCategories() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: "", description: "" });
 
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
-      navigate('/admin/login');
-      return;
-    }
-    fetchCategories();
-  }, [isAuthenticated, isAdmin]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) {
+      navigate("/admin/login");
+      return;
+    }
+    fetchCategories();
+  }, [isAuthenticated, isAdmin, navigate, fetchCategories]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,24 +55,22 @@ export default function AdminCategories() {
         await axios.put(
           `${API_URL}/api/categories/${editingCategory._id}`,
           formData,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
-        toast.success('Category updated successfully');
+        toast.success("Category updated successfully");
       } else {
-        await axios.post(
-          `${API_URL}/api/categories`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        toast.success('Category created successfully');
+        await axios.post(`${API_URL}/api/categories`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Category created successfully");
       }
 
       setDialogOpen(false);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: "", description: "" });
       setEditingCategory(null);
       fetchCategories();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Operation failed');
+      toast.error(error.response?.data?.error || "Operation failed");
     }
   };
 
@@ -83,16 +81,17 @@ export default function AdminCategories() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
 
     try {
       await axios.delete(`${API_URL}/api/categories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Category deleted successfully');
+      toast.success("Category deleted successfully");
       fetchCategories();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Delete failed');
+      toast.error(error.response?.data?.error || "Delete failed");
     }
   };
 
@@ -100,7 +99,7 @@ export default function AdminCategories() {
     setDialogOpen(open);
     if (!open) {
       setEditingCategory(null);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: "", description: "" });
     }
   };
 
@@ -111,13 +110,16 @@ export default function AdminCategories() {
   return (
     <div className="flex min-h-screen bg-white">
       <AdminSidebar active="categories" />
-      
+
       <div className="flex-1 ml-64">
         <header className="border-b p-6 flex items-center justify-between">
-          <h1 className="text-3xl font-semibold tracking-tight" data-testid="categories-heading">
+          <h1
+            className="text-3xl font-semibold tracking-tight"
+            data-testid="categories-heading"
+          >
             Categories
           </h1>
-          
+
           <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger asChild>
               <Button data-testid="add-category-button">
@@ -127,15 +129,23 @@ export default function AdminCategories() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{editingCategory ? 'Edit Category' : 'Create Category'}</DialogTitle>
+                <DialogTitle>
+                  {editingCategory ? "Edit Category" : "Create Category"}
+                </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4" data-testid="category-form">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4"
+                data-testid="category-form"
+              >
                 <div>
                   <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                     data-testid="category-name-input"
                   />
@@ -145,12 +155,18 @@ export default function AdminCategories() {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     data-testid="category-description-input"
                   />
                 </div>
-                <Button type="submit" className="w-full" data-testid="category-submit-button">
-                  {editingCategory ? 'Update' : 'Create'}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  data-testid="category-submit-button"
+                >
+                  {editingCategory ? "Update" : "Create"}
                 </Button>
               </form>
             </DialogContent>
@@ -162,7 +178,9 @@ export default function AdminCategories() {
             <p>Loading...</p>
           ) : categories.length === 0 ? (
             <div className="text-center py-16" data-testid="no-categories">
-              <p className="text-muted-foreground">No categories yet. Create your first one!</p>
+              <p className="text-muted-foreground">
+                No categories yet. Create your first one!
+              </p>
             </div>
           ) : (
             <div className="border rounded-md">
@@ -175,10 +193,16 @@ export default function AdminCategories() {
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map(category => (
-                    <tr key={category._id} className="border-b last:border-0" data-testid={`category-row-${category._id}`}>
+                  {categories.map((category) => (
+                    <tr
+                      key={category._id}
+                      className="border-b last:border-0"
+                      data-testid={`category-row-${category._id}`}
+                    >
                       <td className="p-4 font-medium">{category.name}</td>
-                      <td className="p-4 text-muted-foreground">{category.description}</td>
+                      <td className="p-4 text-muted-foreground">
+                        {category.description}
+                      </td>
                       <td className="p-4 text-right space-x-2">
                         <Button
                           variant="ghost"

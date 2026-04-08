@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { 
-  ArrowLeft, 
-  Download, 
-  ShoppingCart, 
-  Eye, 
-  TrendingUp, 
-  Tag, 
+import {
+  ArrowLeft,
+  Download,
+  ShoppingCart,
+  Eye,
+  TrendingUp,
+  Tag,
   Sparkles,
   Check,
   Heart,
   Share2,
-  ZoomIn
+  ZoomIn,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -29,7 +29,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { user, token, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
-  
+
   const [product, setProduct] = useState(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,10 +48,10 @@ export default function ProductDetailPage() {
       // Fetch similar products
       if (response.data.category?._id) {
         const similarRes = await axios.get(
-          `${API_URL}/api/products?category=${response.data.category._id}`
+          `${API_URL}/api/products?category=${response.data.category._id}`,
         );
         setSimilarProducts(
-          similarRes.data.filter(p => p._id !== id).slice(0, 4)
+          similarRes.data.filter((p) => p._id !== id).slice(0, 4),
         );
       }
     } catch (error) {
@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
       const orderResponse = await axios.post(
         `${API_URL}/api/payment/create-order`,
         { productId: id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       const options = {
@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
               },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${token}` } },
             );
             toast.success("Purchase successful!");
             navigate("/dashboard");
@@ -177,9 +177,11 @@ export default function ProductDetailPage() {
       <div className="border-b bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-[#0055FF]">Home</Link>
+            <Link to="/" className="hover:text-[#0055FF]">
+              Home
+            </Link>
             <span>/</span>
-            <Link 
+            <Link
               to={`/filter?category=${product.category?._id}`}
               className="hover:text-[#0055FF]"
             >
@@ -212,7 +214,7 @@ export default function ProductDetailPage() {
                     src={product.previewImagesUrls[selectedImage]}
                     alt={product.title}
                     className={`w-full h-full object-contain transition-transform ${
-                      isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
+                      isZoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
                     }`}
                     onClick={() => setIsZoomed(!isZoomed)}
                   />
@@ -250,27 +252,28 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Thumbnail Gallery */}
-            {product.previewImagesUrls && product.previewImagesUrls.length > 1 && (
-              <div className="grid grid-cols-5 gap-2">
-                {product.previewImagesUrls.map((url, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square rounded-lg overflow-hidden border-2 ${
-                      selectedImage === index 
-                        ? 'border-[#0055FF]' 
-                        : 'border-transparent hover:border-gray-300'
-                    }`}
-                  >
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            {product.previewImagesUrls &&
+              product.previewImagesUrls.length > 1 && (
+                <div className="grid grid-cols-5 gap-2">
+                  {product.previewImagesUrls.map((url, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(index)}
+                      className={`aspect-square rounded-lg overflow-hidden border-2 ${
+                        selectedImage === index
+                          ? "border-[#0055FF]"
+                          : "border-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
 
             {/* Stats */}
             <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-lg">
@@ -294,7 +297,7 @@ export default function ProductDetailPage() {
           {/* Right Column - Details */}
           <div>
             <div className="mb-6">
-              <Link 
+              <Link
                 to={`/filter?category=${product.category?._id}`}
                 className="text-sm text-[#0055FF] hover:underline uppercase tracking-wide mb-2 inline-block"
               >
@@ -303,7 +306,7 @@ export default function ProductDetailPage() {
               <h1 className="text-4xl font-bold tracking-tight mb-4">
                 {product.title}
               </h1>
-              
+
               {/* Tags */}
               {product.tags && product.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6">
@@ -318,7 +321,9 @@ export default function ProductDetailPage() {
 
               <div className="flex items-baseline gap-3 mb-8">
                 {product.isFree ? (
-                  <span className="text-3xl font-bold text-green-600">Free</span>
+                  <span className="text-3xl font-bold text-green-600">
+                    Free
+                  </span>
                 ) : (
                   <span className="text-4xl font-bold">₹{product.price}</span>
                 )}
@@ -351,8 +356,8 @@ export default function ProductDetailPage() {
                       />
                     ) : (
                       <>
-                        <Button 
-                          size="lg" 
+                        <Button
+                          size="lg"
                           className="w-full bg-[#0055FF] hover:bg-[#0044CC]"
                           onClick={handlePurchase}
                           disabled={purchasing}
@@ -360,9 +365,9 @@ export default function ProductDetailPage() {
                           <ShoppingCart className="h-5 w-5 mr-2" />
                           {purchasing ? "Processing..." : "Buy Now"}
                         </Button>
-                        <Button 
-                          size="lg" 
-                          variant="outline" 
+                        <Button
+                          size="lg"
+                          variant="outline"
                           className="w-full"
                           onClick={handleAddToCart}
                         >
@@ -394,14 +399,16 @@ export default function ProductDetailPage() {
                 {product.productType && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Type</span>
-                    <span className="font-medium capitalize">{product.productType}</span>
+                    <span className="font-medium capitalize">
+                      {product.productType}
+                    </span>
                   </div>
                 )}
                 {product.files && product.files.length > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Formats</span>
                     <span className="font-medium">
-                      {product.files.map(f => f.format).join(', ')}
+                      {product.files.map((f) => f.format).join(", ")}
                     </span>
                   </div>
                 )}
@@ -426,9 +433,14 @@ export default function ProductDetailPage() {
                 <h3 className="text-lg font-semibold mb-4">What's Included</h3>
                 <div className="space-y-2">
                   {product.files.map((file, index) => (
-                    <div key={index} className="flex items-center gap-3 text-sm">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 text-sm"
+                    >
                       <Check className="h-4 w-4 text-green-500" />
-                      <span>{file.format} file ({file.fileName})</span>
+                      <span>
+                        {file.format} file ({file.fileName})
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -461,7 +473,9 @@ export default function ProductDetailPage() {
                     {similarProduct.title}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    {similarProduct.isFree ? 'Free' : `₹${similarProduct.price}`}
+                    {similarProduct.isFree
+                      ? "Free"
+                      : `₹${similarProduct.price}`}
                   </p>
                 </Link>
               ))}

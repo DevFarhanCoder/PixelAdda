@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  Search, 
-  TrendingUp, 
-  Star, 
-  Clock, 
-  Sparkles, 
-  ArrowRight, 
+import {
+  Search,
+  TrendingUp,
+  Star,
+  Clock,
+  Sparkles,
+  ArrowRight,
   ChevronRight,
   Download,
   Eye,
-  Zap
+  Zap,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -24,7 +24,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Lazy loading image component
 const LazyImage = ({ src, alt, className }) => {
-  const [imageSrc, setImageSrc] = useState('');
+  const [imageSrc, setImageSrc] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
@@ -37,14 +37,11 @@ const LazyImage = ({ src, alt, className }) => {
   }, [src]);
 
   return (
-    <div className={`${className} ${!imageLoaded ? 'bg-gray-100 animate-pulse' : ''}`}>
+    <div
+      className={`${className} ${!imageLoaded ? "bg-gray-100 animate-pulse" : ""}`}
+    >
       {imageLoaded && (
-        <img 
-          src={imageSrc} 
-          alt={alt} 
-          className={className}
-          loading="lazy"
-        />
+        <img src={imageSrc} alt={alt} className={className} loading="lazy" />
       )}
     </div>
   );
@@ -53,7 +50,7 @@ const LazyImage = ({ src, alt, className }) => {
 export default function HomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [categories, setCategories] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -64,13 +61,14 @@ export default function HomePage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [categoriesRes, trendingRes, featuredRes, popularRes, latestRes] = await Promise.all([
-        axios.get(`${API_URL}/api/categories`),
-        axios.get(`${API_URL}/api/products/special/trending?limit=8`),
-        axios.get(`${API_URL}/api/products/special/featured?limit=6`),
-        axios.get(`${API_URL}/api/products/special/popular?limit=8`),
-        axios.get(`${API_URL}/api/products/special/latest?limit=12`)
-      ]);
+      const [categoriesRes, trendingRes, featuredRes, popularRes, latestRes] =
+        await Promise.all([
+          axios.get(`${API_URL}/api/categories`),
+          axios.get(`${API_URL}/api/products/special/trending?limit=8`),
+          axios.get(`${API_URL}/api/products/special/featured?limit=6`),
+          axios.get(`${API_URL}/api/products/special/popular?limit=8`),
+          axios.get(`${API_URL}/api/products/special/latest?limit=12`),
+        ]);
 
       setCategories(categoriesRes.data);
       setTrendingProducts(trendingRes.data);
@@ -97,10 +95,7 @@ export default function HomePage() {
   };
 
   const ProductCard = ({ product, showBadge = false }) => (
-    <Link 
-      to={`/product/${product._id}`}
-      className="group block"
-    >
+    <Link to={`/product/${product._id}`} className="group block">
       <div className="relative aspect-square rounded-md overflow-hidden bg-gray-100 mb-3">
         {product.previewImagesUrls?.[0] && (
           <LazyImage
@@ -109,14 +104,14 @@ export default function HomePage() {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         )}
-        
+
         {showBadge && product.isPremium && (
           <Badge className="absolute top-2 left-2 bg-[#0055FF] text-white">
             <Sparkles className="h-3 w-3 mr-1" />
             Premium
           </Badge>
         )}
-        
+
         {product.isFeatured && (
           <Badge className="absolute top-2 right-2 bg-yellow-500 text-white">
             <Star className="h-3 w-3 mr-1" />
@@ -144,15 +139,19 @@ export default function HomePage() {
       <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-[#0055FF] transition-colors">
         {product.title}
       </h3>
-      
+
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
           {product.category?.name}
         </span>
         {product.isFree ? (
-          <Badge variant="outline" className="text-xs">Free</Badge>
+          <Badge variant="outline" className="text-xs">
+            Free
+          </Badge>
         ) : (
-          <span className="text-xs font-mono font-medium">₹{product.price}</span>
+          <span className="text-xs font-mono font-medium">
+            ₹{product.price}
+          </span>
         )}
       </div>
     </Link>
@@ -185,7 +184,8 @@ export default function HomePage() {
               <span className="text-[#0055FF]">Design Assets</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Millions of high-quality images, vectors, templates, and more for all your creative projects
+              Millions of high-quality images, vectors, templates, and more for
+              all your creative projects
             </p>
 
             {/* Search Bar */}
@@ -199,7 +199,7 @@ export default function HomePage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-14 pl-12 pr-4 text-base rounded-full shadow-lg border-2 focus:border-[#0055FF]"
                 />
-                <Button 
+                <Button
                   type="submit"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full bg-[#0055FF] hover:bg-[#0044CC] px-6"
                 >
@@ -212,7 +212,9 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-8 mt-12 text-sm">
               <div className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-[#0055FF]" />
-                <span className="font-medium">{latestProducts.length}+ Assets</span>
+                <span className="font-medium">
+                  {latestProducts.length}+ Assets
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="h-5 w-5 text-yellow-500" />
@@ -231,9 +233,11 @@ export default function HomePage() {
       <section className="py-12 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold tracking-tight">Browse by Category</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              Browse by Category
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {categories.slice(0, 12).map((category) => (
               <Link
@@ -259,7 +263,9 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <TrendingUp className="h-6 w-6 text-[#0055FF]" />
-                <h2 className="text-3xl font-bold tracking-tight">Trending Now</h2>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Trending Now
+                </h2>
               </div>
               <Link to="/filter?sort=trending">
                 <Button variant="ghost" className="group">
@@ -285,7 +291,9 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Star className="h-6 w-6 text-yellow-500" />
-                <h2 className="text-3xl font-bold tracking-tight">Featured Assets</h2>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Featured Assets
+                </h2>
               </div>
             </div>
 
@@ -307,23 +315,24 @@ export default function HomePage() {
               Get Unlimited Access
             </h2>
             <p className="text-lg text-white/90 mb-8">
-              Download unlimited premium assets with our subscription plans. Starting from just ₹499/month.
+              Download unlimited premium assets with our subscription plans.
+              Starting from just ₹499/month.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-[#0055FF] hover:bg-gray-100 px-8"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate("/dashboard")}
               >
                 View Plans
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
               {!user && (
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="border-white text-white hover:bg-white/10 px-8"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate("/register")}
                 >
                   Sign Up Free
                 </Button>
@@ -340,7 +349,9 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Star className="h-6 w-6 text-[#0055FF]" />
-                <h2 className="text-3xl font-bold tracking-tight">Most Popular</h2>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Most Popular
+                </h2>
               </div>
               <Link to="/filter?sort=popular">
                 <Button variant="ghost" className="group">
@@ -366,7 +377,9 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Clock className="h-6 w-6 text-[#0055FF]" />
-                <h2 className="text-3xl font-bold tracking-tight">Latest Uploads</h2>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Latest Uploads
+                </h2>
               </div>
               <Link to="/filter?sort=latest">
                 <Button variant="ghost" className="group">
@@ -394,10 +407,10 @@ export default function HomePage() {
           <p className="text-muted-foreground mb-8">
             Join thousands of designers and creatives using PixelAdda
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-[#0055FF] hover:bg-[#0044CC]"
-            onClick={() => navigate('/register')}
+            onClick={() => navigate("/register")}
           >
             Get Started Free
             <ArrowRight className="h-4 w-4 ml-2" />

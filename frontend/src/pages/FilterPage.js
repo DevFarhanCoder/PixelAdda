@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import { ShoppingCart, Filter, SlidersHorizontal } from "lucide-react";
@@ -67,37 +67,17 @@ export default function FilterPage() {
     category: [],
   });
 
-  // Get initial filters from URL params
-  useEffect(() => {
-    const initialFilters = {
-      productType: searchParams.getAll("type"),
-      fileFormat: searchParams.getAll("format"),
-      price: searchParams.getAll("price"),
-      category: searchParams.getAll("category"),
-    };
-    setFilters(initialFilters);
-  }, []);
-
   // Fetch categories
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  // Fetch products when filters change
-  useEffect(() => {
-    fetchProducts();
-  }, [filters]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
+  }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -118,7 +98,28 @@ export default function FilterPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  // Get initial filters from URL params
+  useEffect(() => {
+    const initialFilters = {
+      productType: searchParams.getAll("type"),
+      fileFormat: searchParams.getAll("format"),
+      price: searchParams.getAll("price"),
+      category: searchParams.getAll("category"),
+    };
+    setFilters(initialFilters);
+  }, [searchParams]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // Fetch products when filters change
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleFilterChange = (category, value) => {
     setFilters((prev) => {
@@ -341,7 +342,13 @@ export default function FilterPage() {
                             className="w-full object-cover"
                             muted
                             loop
-                            onMouseEnter={(e) => e.target.play()}
+                            playsInline
+                            onMouseEnter={(e) => {
+                              const playPromise = e.target.play();
+                              if (playPromise !== undefined) {
+                                playPromise.catch(() => {});
+                              }
+                            }}
                             onMouseLeave={(e) => {
                               e.target.pause();
                               e.target.currentTime = 0;

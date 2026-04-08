@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AdminSidebar } from "../../components/AdminSidebar";
@@ -52,16 +52,7 @@ export default function AdminProducts() {
     jpegFile: null,
   });
 
-  useEffect(() => {
-    if (!isAuthenticated || !isAdmin) {
-      navigate("/admin/login");
-      return;
-    }
-    fetchProducts();
-    fetchCategories();
-  }, [isAuthenticated, isAdmin]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/admin/products`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -72,16 +63,25 @@ export default function AdminProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/api/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) {
+      navigate("/admin/login");
+      return;
+    }
+    fetchProducts();
+    fetchCategories();
+  }, [isAuthenticated, isAdmin, navigate, fetchProducts, fetchCategories]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
